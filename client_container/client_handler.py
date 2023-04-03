@@ -6,7 +6,7 @@ class ClientHandler():
     def __init__(self):
         self.clients = []
         self.num_clients = 0
-        
+
 
     def start(self):
         print("[Client Handler] Starting client handler")
@@ -19,8 +19,8 @@ class ClientHandler():
 
 
     async def handle_client(self, websocket):
-        self.clients.append(Player(websocket, self.num_clients))
-        self.num_clients += 1
+        player = Player(websocket, self.num_clients)
+        await player.initialize()
 
-        print(f"[Client Handler] Client {self.num_clients} connected")
-    
+        self.clients.append(player)
+        self.num_clients += 1

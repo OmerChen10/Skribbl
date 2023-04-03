@@ -17,12 +17,8 @@
             const ws = new WebSocket('ws://localhost:5801');
 
             ws.onopen = function(event) {
-                console.log('WebSocket connection established.');
+                console.log('CONNECTED TO GAME SERVER');
                 ws.send(username);
-            };
-
-            ws.onmessage = function(event) {
-                console.log('Message received: ' + event.data);
             };
         }
         
