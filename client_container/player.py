@@ -1,6 +1,6 @@
 import websockets
 import asyncio
-from colorama import Fore
+from colorama import Fore, Style
 
 
 class Player():
@@ -16,8 +16,8 @@ class Player():
         """ Initialize the player. """
 
         name = await self.socket.recv()
-        print(Fore.GREEN + f"[Client Handler] Player {self.id} has joined with the name: {name}")
-
+        print(f"[Client Handler] Player {self.id} has joined with the name: {name}")
+        
         self.name = name
 
 

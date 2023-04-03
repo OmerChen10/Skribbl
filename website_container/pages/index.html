@@ -5,14 +5,13 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Home</title>
-
-    
+    <script src="../scripts/script.js"></script>
 </head>
 <body>
-    <h1>Press to join</h1>
-    <button
-        onclick="location.href='/join'">
-        JOIN
-    </button>
+    <h1 style="font-family: Arial, Helvetica, sans-serif;">
+    Enter Your Username:</h1>
+    <input type="text" id="username" placeholder="Username">
+    <input type="text" id="gameCode" placeholder="Game Code">
+    <button onclick="connect()">Join</button>
 </body>
 </html>
