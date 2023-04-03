@@ -18,7 +18,7 @@ class ClientHandler():
 
     
     async def start_server(self):
-        await websockets.serve(self.handle_client, "localhost", self.game_code) 
+        await websockets.serve(self.handle_client, "0.0.0.0", self.game_code) 
 
 
     async def handle_client(self, websocket):
