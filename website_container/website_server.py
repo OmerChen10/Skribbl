@@ -1,7 +1,9 @@
 import flask
 import threading
 import os
+import Constants
 from colorama import Fore
+
 
 class WebsiteServer(threading.Thread):
     def __init__(self, game_code: str) -> None:
@@ -9,10 +11,9 @@ class WebsiteServer(threading.Thread):
 
         ROOT = os.path.dirname((__file__))
         self.game_code = game_code
-        self.app = flask.Flask(__name__, 
+        self.app = flask.Flask(__name__,
                                template_folder=os.path.join(ROOT, "pages"),
                                static_folder=os.path.join(ROOT, "scripts"))
-
 
         @self.app.route('/')
         def index():
@@ -22,19 +23,17 @@ class WebsiteServer(threading.Thread):
         def join():
             return flask.render_template('game.html')
 
-
         @self.app.errorhandler(404)
         def page_not_found(e):
             return flask.render_template('game_not_found.html'), 404
 
-
     def run(self):
         print("[Website] Starting website server")
-        
-        self.app.run(host='0.0.0.0', port=8080, debug=False)
 
-    
+        self.app.run(host='0.0.0.0',
+                     port=Constants.NetworkConfig.website_port, debug=False)
+
+
 if __name__ == '__main__':
     website = WebsiteServer()
     website.start()
-

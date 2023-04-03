@@ -9,17 +9,14 @@ class ClientHandler():
         self.clients = []
         self.num_clients = 0
 
-
     def start(self):
         print("[Client Handler] Starting client handler")
-        
+
         asyncio.get_event_loop().run_until_complete(self.start_server())
         asyncio.get_event_loop().run_forever()
 
-    
     async def start_server(self):
-        await websockets.serve(self.handle_client, "0.0.0.0", self.game_code) 
-
+        await websockets.serve(self.handle_client, "0.0.0.0", self.game_code)
 
     async def handle_client(self, websocket):
         player = Player(websocket, self.num_clients)
