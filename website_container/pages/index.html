@@ -5,13 +5,17 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Home</title>
-    <script src="../scripts/script.js"></script>
+    <script> 
+        function join(){
+            const gameCode = document.getElementById("gameCode").value;
+            location.href = "/" + gameCode;
+        }
+    </script>
 </head>
 <body>
     <h1 style="font-family: Arial, Helvetica, sans-serif;">
-    Enter Your Username:</h1>
-    <input type="text" id="username" placeholder="Username">
+    Enter Game Code:</h1>
     <input type="text" id="gameCode" placeholder="Game Code">
-    <button onclick="connect()">Join</button>
+    <button onclick="join()">Join</button>
 </body>
 </html>

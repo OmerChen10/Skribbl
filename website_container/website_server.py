@@ -13,6 +13,7 @@ class WebsiteServer(threading.Thread):
                                template_folder=os.path.join(ROOT, "pages"),
                                static_folder=os.path.join(ROOT, "scripts"))
 
+
         @self.app.route('/')
         def index():
             return flask.render_template('index.html')
