@@ -6,10 +6,12 @@ body{
 h1{
     font-family: Comic Sans MS;
     text-align: center;
+    
 }
 
-.username {
+#username-container {
     display: flex;
+    display: none;
     align-items: center;
     justify-content: center;
     min-height: 50vh;
@@ -58,3 +60,23 @@ button:hover {
     background-color: rgb(16, 70, 95);
     color: rgb(128, 197, 209);
 }
+
+.game {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    height: 75vh;
+    width: 100%;
+}
+
+canvas {
+    width: 70vw;
+    height: 70vw;
+    max-width: 700px; 
+    max-height: 700px;
+    border: 5px solid rgb(16, 70, 95);
+    background-color: white;
+    border-radius: 5px;
+}
+
