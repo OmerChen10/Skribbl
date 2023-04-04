@@ -4,14 +4,20 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="../static/script.js"></script>
+    <link rel="stylesheet" href="../static/game.css">
     <title>Skribbl</title>
-    <script src="../scripts/script.js"></script>
     
 </head>
 <body>
-    <h1 style="font-family:Arial, Helvetica, sans-serif;">
-    Enter your Username</h1>
-    <input type="text" id="username" placeholder="Username">
-    <button onclick="connect()">Join</button>
+    <div class="username"> 
+        <h1>Enter your Username</h1>
+
+        <div class="username-input">
+            <input type="text" id="username" placeholder="Username">
+            <button onclick="connect()">Join</button>
+        </div>
+    </div>
+
 </body>
 </html>

@@ -13,7 +13,7 @@ class WebsiteServer(threading.Thread):
         self.game_code = game_code
         self.app = flask.Flask(__name__,
                                template_folder=os.path.join(ROOT, "pages"),
-                               static_folder=os.path.join(ROOT, "scripts"))
+                               static_folder=os.path.join(ROOT, "static"))
 
         @self.app.route('/')
         def index():
