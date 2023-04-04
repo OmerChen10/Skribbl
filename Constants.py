@@ -2,7 +2,7 @@
 
 class GameConfig():
 
-    code_length = 5
+    code_length = 4
 
 
 class NetworkConfig():

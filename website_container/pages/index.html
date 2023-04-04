@@ -8,14 +8,55 @@
     <script> 
         function join(){
             const gameCode = document.getElementById("gameCode").value;
+            if (gameCode == ""){
+                alert("Please enter a game code");
+                return;
+            }
             location.href = "/" + gameCode;
         }
     </script>
+    <style>
+        body{
+            background-color: #c8ecec;
+            color: rgb(16, 70, 95);
+        }
+        .code-screen {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 50vh;
+            flex-direction: column;
+        }
+
+        #gameCode {
+            border-radius: 10px;
+            background-color: rgb(157, 193, 223);
+            color: rgb(16, 70, 95);
+            margin: 2px;
+        }
+
+        ::placeholder{
+            color: rgb(16, 70, 95);
+        }
+
+        #join-button {
+            border-radius: 10px;
+            background-color: rgb(157, 193, 223);
+            color: rgb(16, 70, 95);
+            margin: 2px;
+        }
+    </style>
 </head>
+
 <body>
-    <h1 style="font-family: Arial, Helvetica, sans-serif;">
-    Enter Game Code:</h1>
-    <input type="text" id="gameCode" placeholder="Game Code">
-    <button onclick="join()">Join</button>
+    <div class="code-screen">
+        <h1 style="font-family: Comic Sans MS; position: relative;">
+            Enter Game Code:</h1>
+        
+            <div class="input">
+                <input type="text" id="gameCode" placeholder="Game Code">
+                <button id="join-button" onclick="join()">Join</button>
+            </div>
+    </div>
 </body>
 </html>
