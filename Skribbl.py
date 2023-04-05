@@ -1,8 +1,7 @@
 from website_container import WebsiteServer
 from client_container import ClientHandler
-import random
-import Constants
-import time
+from game_container import GameManger
+import random, Constants, time
 from colorama import Fore, Style
 
 
@@ -11,6 +10,7 @@ class Skribbl():
         self.game_code = self._randomize_game_code()
         self.website = WebsiteServer(self.game_code)
         self.client_handler = ClientHandler(self.game_code)
+        self.game_manager = GameManger(self.client_handler)
 
 
     def start(self):
@@ -21,6 +21,7 @@ class Skribbl():
         time.sleep(1)
         self.website.start()
         self.client_handler.start()
+        self.game_manager.start()
 
 
     def _randomize_game_code(self) -> str:
