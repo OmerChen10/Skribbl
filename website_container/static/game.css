@@ -9,23 +9,12 @@ h1{
     
 }
 
-#username-container {
+.username {
     display: flex;
-    display: none;
     align-items: center;
     justify-content: center;
     min-height: 50vh;
     flex-direction: column;
-}
-
-#username-input {
-    border-radius: 5px;
-    background-color: rgb(128, 197, 209);
-    border-color: rgb(16, 70, 95);
-    color: rgb(16, 70, 95);
-    margin: 2px;
-    padding: 5px;
-    border-style: solid;
 }
 
 input {
@@ -61,8 +50,25 @@ button:hover {
     color: rgb(128, 197, 209);
 }
 
+#host-wait-screen {
+    display: none;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    height: 75vh;
+}
+
+#guest-wait-screen {
+    display: none;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    height: 75vh;
+}
+
 .game {
     display: flex;
+    display: none;
     align-items: center;
     justify-content: center;
     flex-direction: column;

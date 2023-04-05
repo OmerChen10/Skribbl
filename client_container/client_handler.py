@@ -24,3 +24,5 @@ class ClientHandler():
 
         self.clients.append(player)
         self.num_clients += 1
+
+        

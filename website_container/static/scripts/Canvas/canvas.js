@@ -1,7 +1,5 @@
 
 var canvas, ctx, canvasPos;
-window.addEventListener('load', initializeGame);
-
 function initializeGame() {
     // This function is used to initialize the game canvas.
     var gameElements = document.querySelector('.game');
@@ -16,7 +14,7 @@ function initializeGame() {
     canvasPos = canvas.getBoundingClientRect();
 
     console.log('GAME INITIALIZED');
-    draw(); // Start game
+    draw();
 }
 
 function draw() {

@@ -4,25 +4,36 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script src="../static/scripts/management/management.js"></script>
+    <script src="../static/scripts/main.js"></script>
+    <script src="../static/scripts/management/transitions.js"></script>
+    <script src="../static/scripts/management/networking.js"></script>
     <script src="../static/scripts/Canvas/canvas.js"></script>
     <link rel="stylesheet" href="../static/game.css">
     <title>Skribbl</title>
     
 </head>
 <body>
-    <div id="username-container"> 
+    <div class="username"> 
         <h1>Enter your Username</h1>
-        <div class="username-input">
-            <input type="text" id="username" placeholder="Username">
-            <button onclick="connectToGameServer()">Join</button>
+        <div id="username-input">
+            <input type="text" id="username-text" placeholder="Username">
+            <button onclick="main()">Join</button>
+        </div>
+    </div>
+
+    <div class="wait-screen">
+        <div id="host-wait-screen">
+            <h1>Press the button to start</h1>
+            <button id="start-game-button" onclick="startGame()">Start</button>
+        </div>
+        <div id="guest-wait-screen">
+            <h1>Waiting for host to start</h1>
         </div>
     </div>
 
     <div class="game">
         <h1>Skribbl</h1>
         <canvas></canvas>
-
     </div>
 
 </body>

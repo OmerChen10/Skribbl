@@ -15,8 +15,13 @@ class Player():
         """ Initialize the player. """
 
         name = await self.socket.recv()
-        print(
-            f"[Client Handler] Player {self.id} has joined with the name: {name}")
+        print(f"[Client Handler] Player {self.id} has joined with the name: {name}")
+
+        if (self.id == 0):
+            await self.socket.send("host")
+
+        else:
+            await self.socket.send("guest")
 
         self.name = name
 
