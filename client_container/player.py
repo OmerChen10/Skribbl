@@ -34,7 +34,5 @@ class Player():
     async def receive(self) -> str:
         """ Receive a message from the player. """
         
-        data = await self.socket.recv()
-        print("Received: " + data)
-        return data
+        return await self.socket.recv()
 

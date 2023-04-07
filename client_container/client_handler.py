@@ -15,9 +15,9 @@ class ClientHandler(threading.Thread):
         print("[Client Handler] Starting client handler")
 
         asyncio.set_event_loop(asyncio.new_event_loop())
-        loop = asyncio.get_event_loop()
-        loop.run_until_complete(self.start_server())
-        loop.run_forever()
+        self.loop = asyncio.get_event_loop()
+        self.loop.run_until_complete(self.start_server())
+        self.loop.run_forever()
 
     async def start_server(self):
         await websockets.serve(self.handle_client, "0.0.0.0", self.game_code)
@@ -33,11 +33,11 @@ class ClientHandler(threading.Thread):
         self.num_clients += 1
 
     async def sendToClient(self, index: int, message: str):
-        await self.clients[index].send(message)
+        asyncio.run(self.clients[index].send(message))
 
-    async def receiveFromClient(self, index: int) -> str:
-        await self.clients[index].receive()
+    def receiveFromClient(self, index: int) -> str:
+        return asyncio.run(self.clients[index].receive())
 
-    async def sendToAllClients(self, message: str):
+    def sendToAllClients(self, message: str):
         for client in self.clients:
-            await client.send(message)
+            asyncio.run(client.send(message))
