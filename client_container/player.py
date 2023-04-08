@@ -1,5 +1,4 @@
-import websockets
-import asyncio
+import websockets, asyncio, json
 from colorama import Fore, Style
 
 
@@ -14,16 +13,18 @@ class Player():
     async def initialize(self):
         """ Initialize the player. """
 
-        name = await self.socket.recv()
-        print(f"[Client Handler] Player {self.id} has joined with the name: {name}")
+        player_data = await self.receiveJson()
+        print(f"[Client Handler] Player {self.id} has joined with the name: {player_data['username']}")
 
         if (self.id == 0):
-            await self.socket.send("host")
+            player_data['isHost'] = True
+            await self.sendJson(player_data)
 
         else:
-            await self.socket.send("guest")
+            player_data['isHost'] = False
+            await self.sendJson(player_data)
 
-        self.name = name
+        self.name = player_data['username']
 
     async def send(self, message: str):
         """ Send a message to the player. """
@@ -35,4 +36,19 @@ class Player():
         """ Receive a message from the player. """
         
         return await self.socket.recv()
+    
+
+    async def sendJson(self, data: dict):
+        """ Send a json to the player. """
+
+        await self.socket.send(json.dumps(data))
+
+
+    async def receiveJson(self) -> dict:
+        """ Receive a json from the player. """
+
+        return json.loads(await self.socket.recv())
+    
+
+
 

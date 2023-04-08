@@ -41,3 +41,7 @@ class ClientHandler(threading.Thread):
     def sendToAllClients(self, message: str):
         for client in self.clients:
             asyncio.run(client.send(message))
+
+    def sendJsonToClient(self, index: int, message: dict):
+        asyncio.run(self.clients[index].sendJson(message))
+    

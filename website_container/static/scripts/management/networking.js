@@ -21,29 +21,6 @@ class NetworkHandler{
         });
     }
 
-    initiatePlayer() {
-        // This function checks if the user is the host of the game.
-        return new Promise(async (resolve, reject) => {
-            var username = document.getElementById('username-text').value;
-            if (username == '') {
-                alert('Please enter a username');
-                return;
-            }
-            
-            this.send(username); // Send username to server
-
-            var serverMsg = await this.receive();
-            if (serverMsg == 'host') {
-                console.log('HOST');
-                resolve(true);
-            }
-            else {
-                console.log('GUEST');
-                resolve(false);
-            }
-        });
-    }
-
     getSocketState() {
         // Return the state of the ws connection
         return (this.ws.readyState == WebSocket.OPEN);
