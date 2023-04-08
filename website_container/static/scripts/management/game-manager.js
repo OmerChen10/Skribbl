@@ -3,8 +3,7 @@ class GameManger {
 
     constructor() {
         this.player = {username: null, isHost: null};
-        this.networkHandler = new NetworkHandler();
-        
+        this.networkHandler = new NetworkHandler();      
     }
 
     initiatePlayer() {
