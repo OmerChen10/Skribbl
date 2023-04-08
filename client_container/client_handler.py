@@ -1,5 +1,5 @@
 import websockets, asyncio, threading
-from client_container.player import Player
+from client_container.client import Client
 
 
 class ClientHandler(threading.Thread):
@@ -7,9 +7,9 @@ class ClientHandler(threading.Thread):
         threading.Thread.__init__(self)
 
         self.game_code: str = game_code
-        self.clients: list[Player] = []
+        self.clients: list[Client] = []
         self.num_clients: int = 0
-        self.host: Player = None
+        self.host: Client = None
 
     def run(self):
         print("[Client Handler] Starting client handler")
@@ -23,13 +23,19 @@ class ClientHandler(threading.Thread):
         await websockets.serve(self.handle_client, "0.0.0.0", self.game_code)
 
     async def handle_client(self, websocket):
-        player = Player(websocket, self.num_clients)
-        await player.initialize()
+        for client in self.clients:
+            if (client.socket.remote_address[0] == websocket.remote_address[0]):
+                print(f"[Client Handler] Client {client.id} reconnected.")
+                await client.reconnect(websocket)
+                return
+
+        new_client = Client(websocket, self.num_clients)
+        await new_client.initialize()
 
         if (self.num_clients == 0): # Make the first player the host
-            self.host = player
+            self.host = new_client
 
-        self.clients.append(player)
+        self.clients.append(new_client)
         self.num_clients += 1
 
     async def sendToClient(self, index: int, message: str):
