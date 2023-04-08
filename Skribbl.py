@@ -1,7 +1,7 @@
 from website_container import WebsiteServer
 from client_container import ClientHandler
 from game_container import GameManger
-import random, Constants, time
+import random, Constants
 from colorama import Fore, Style
 
 
@@ -18,7 +18,6 @@ class Skribbl():
               f"[Skribbl] Starting game with code: {self.game_code}"
               + Style.RESET_ALL)
         
-        time.sleep(1)
         self.website.start()
         self.client_handler.start()
         self.game_manager.start()

@@ -11,6 +11,8 @@ class WebsiteServer(threading.Thread):
         self.app = flask.Flask(__name__,
                                template_folder=os.path.join(ROOT, "pages"),
                                static_folder=os.path.join(ROOT, "static"))
+        
+        logging.getLogger('werkzeug').disabled = True
 
         @self.app.route('/')
         def index():
