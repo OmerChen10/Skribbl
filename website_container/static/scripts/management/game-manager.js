@@ -40,12 +40,15 @@ class GameManger {
                 guestWaitScreen.style.display = "flex";
             }
     
-            // if (this.player.isHost) {
-            //     // Wait for the button to be pressed
-            //     await new Promise((resolve, reject) => {
-            //         startGameButton.addEventListener('click', resolve);
-            //     });
-            // }
+            if (this.player.isHost) {
+                // Wait for the button to be pressed
+                await new Promise((resolve, reject) => {
+                    startGameButton.addEventListener('click', resolve);
+                });
+                await this.networkHandler.connectToGameServer();
+                console.log(this.networkHandler.getSocketState());
+                this.networkHandler.send("start");
+            }
         });
     }
 
