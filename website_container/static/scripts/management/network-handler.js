@@ -8,7 +8,8 @@ class NetworkHandler{
         return new Promise((resolve, reject) => {
             const gameCode = location.pathname.replace('/', '');
             const ip = location.hostname;
-            this.ws = new WebSocket('ws://' + ip + ':' + gameCode); // Connect to server
+            this.serverAddress = 'ws://' + ip + ':' + gameCode;
+            this.ws = new WebSocket(this.serverAddress); // Connect to server
 
             this.ws.onopen = function (event) {
                 console.log('CONNECTED TO GAME SERVER');
@@ -20,6 +21,19 @@ class NetworkHandler{
             }
         });
     }
+
+    reconnectToGameServer(){
+        return new Promise((resolve, reject) => {
+           
+            this.ws = new WebSocket(this.serverAddress); // Connect to server
+
+            this.ws.onopen = async (event) => {
+                console.log('RECONNECTED TO GAME SERVER');
+                resolve(await this.receiveJson());
+            };
+        });
+    }
+
 
     getSocketState() {
         // Return the state of the ws connection

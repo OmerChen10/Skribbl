@@ -1,4 +1,4 @@
-import threading
+import threading, time
 from client_container import ClientHandler
 
 
@@ -18,11 +18,12 @@ class GameManger(threading.Thread):
 
         while True:
             if (self.client_handler.host is not None):
-                host_msg = self.client_handler.receiveFromClient(0)
-                if (host_msg == "start"):
-                    break
+                break
 
-        self.startGame()
+        print("[Game Manager] Host has joined")
+        host_msg = self.client_handler.receiveFromClient(0)
+        if (host_msg == "start"):
+            self.startGame()
 
 
     def startGame(self) -> None:

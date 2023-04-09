@@ -42,12 +42,12 @@ class GameManger {
     
             if (this.player.isHost) {
                 // Wait for the button to be pressed
-                await new Promise((resolve, reject) => {
-                    startGameButton.addEventListener('click', resolve);
-                });
-                await this.networkHandler.connectToGameServer();
-                console.log(this.networkHandler.getSocketState());
-                this.networkHandler.send("start");
+                var cmd = prompt("Enter 'start' to start the game");
+                if (cmd == "start") {
+                    console.log(this.networkHandler.getSocketState());
+                    this.networkHandler.send("start");
+                    console.log("sent start");
+                }
             }
         });
     }
