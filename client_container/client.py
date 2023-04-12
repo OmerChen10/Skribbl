@@ -1,4 +1,6 @@
-import websockets, asyncio, json
+import websockets
+import asyncio
+import json
 from colorama import Fore, Style
 
 
@@ -12,15 +14,19 @@ class Client():
             "username": None,
             "isHost": True if self.id == 0 else False
         }
+        self.new_message = False
+        self.received_messages = []
+        self.pending_messages = []
 
     async def initialize(self):
         """ Initialize the player. """
 
-        player_data = await self.receiveJson()
+        player_data = await self.socket.recv()
+        player_data = json.loads(player_data)
         print(f"[Client Handler] Player {self.id} has joined with the name: {player_data['username']}")
 
         player_data['isHost'] = self.player_data['isHost']
-        await self.sendJson(player_data)
+        await self.socket.send(json.dumps(player_data))
 
         self.player_data["username"] = player_data['username']
 
@@ -30,29 +36,32 @@ class Client():
         self.socket = new_socket
         await self.sendJson(self.player_data)
 
-    async def send(self, message: str):
-        """ Send a message to the player. """
+    async def update(self):
+        """ Update the player. """
 
-        await self.socket.send(message)
+        await asyncio.gather(self.receiveJson(), self.sendJson())
 
-    
-    async def receive(self) -> str:
-        """ Receive a message from the player. """
-        
-        return await self.socket.recv()
-    
-
-    async def sendJson(self, data: dict):
+    async def sendJson(self):
         """ Send a json to the player. """
 
-        await self.socket.send(json.dumps(data))
-
+        for pending_message in self.pending_messages:
+            await self.socket.send(pending_message)
+            self.pending_messages.remove(pending_message)
 
     async def receiveJson(self) -> dict:
         """ Receive a json from the player. """
 
-        return json.loads(await self.socket.recv())
-    
+        received_json = await self.socket.recv()
+        received_json = json.loads(received_json)
+        self.received_messages.append(received_json)
+        self.new_message = True
 
 
+    def received_new_message(self) -> bool:
+        """ Check if the player has received a new message. """
 
+        if (self.new_message):
+            self.new_message = False
+            return True
+        
+        return False

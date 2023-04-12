@@ -11,7 +11,7 @@ class GameManger(threading.Thread):
     def run(self):
         print("[Game Manager] Starting game manager")
         
-        #self.waitForStart()
+        self.waitForStart()
 
     def waitForStart(self) -> None:
         print("[Game Manager] Waiting for game to start")
@@ -20,12 +20,12 @@ class GameManger(threading.Thread):
             if (self.client_handler.host is not None):
                 break
 
-        host_msg = self.client_handler.receiveFromClient(0)
-        if (host_msg == "start"):
+        game = self.client_handler.receive_from_client(0)
+        if (game["state"] == "start"):
             self.startGame()
 
 
     def startGame(self) -> None:
         print("[Game Manager] Game has started")
-        self.client_handler.sendToAllClients("start")
+
                 

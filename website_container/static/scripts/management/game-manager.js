@@ -20,6 +20,7 @@ class GameManger {
             this.player.username = username;
             this.networkHandler.sendJson(this.player); // Send username to server
             this.player = await this.networkHandler.receiveJson(); // Receive player object from server
+
             resolve();
         });
     }
@@ -40,6 +41,11 @@ class GameManger {
                 guestWaitScreen.style.display = "flex";
             }
 
+            var cmd = prompt("Enter command");
+
+            if (cmd == "start") {
+                this.networkHandler.sendJson({state: "start"});
+            }
         });
     }
 
