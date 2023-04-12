@@ -20,6 +20,7 @@ class GameManger {
             this.player.username = username;
             this.networkHandler.sendJson(this.player); // Send username to server
             this.player = await this.networkHandler.receiveJson(); // Receive player object from server
+
             resolve();
         });
     }
@@ -39,15 +40,11 @@ class GameManger {
             else {
                 guestWaitScreen.style.display = "flex";
             }
-    
-            if (this.player.isHost) {
-                // Wait for the button to be pressed
-                await new Promise((resolve, reject) => {
-                    startGameButton.addEventListener('click', resolve);
-                });
-                await this.networkHandler.connectToGameServer();
-                console.log(this.networkHandler.getSocketState());
-                this.networkHandler.send("start");
+
+            var cmd = prompt("Enter command");
+
+            if (cmd == "start") {
+                this.networkHandler.sendJson({state: "start"});
             }
         });
     }

@@ -18,14 +18,14 @@ class GameManger(threading.Thread):
 
         while True:
             if (self.client_handler.host is not None):
-                host_msg = self.client_handler.receiveFromClient(0)
-                if (host_msg == "start"):
-                    break
+                break
 
-        self.startGame()
+        game = self.client_handler.receive_from_client(0)
+        if (game["state"] == "start"):
+            self.startGame()
 
 
     def startGame(self) -> None:
         print("[Game Manager] Game has started")
-        self.client_handler.sendToAllClients("start")
+
                 

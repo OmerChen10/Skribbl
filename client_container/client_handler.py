@@ -38,16 +38,14 @@ class ClientHandler(threading.Thread):
         self.clients.append(new_client)
         self.num_clients += 1
 
-    async def sendToClient(self, index: int, message: str):
-        asyncio.run(self.clients[index].send(message))
+        while True:
+            await new_client.update()
 
-    def receiveFromClient(self, index: int) -> str:
-        return asyncio.run(self.clients[index].receive())
 
-    def sendToAllClients(self, message: str):
-        for client in self.clients:
-            asyncio.run(client.send(message))
-
-    def sendJsonToClient(self, index: int, message: dict):
-        asyncio.run(self.clients[index].sendJson(message))
+    def receive_from_client(self, index: int):
+        while not self.clients[index].received_new_message():
+            pass
+        
+        return self.clients[index].received_messages.pop(0)
+         
     
