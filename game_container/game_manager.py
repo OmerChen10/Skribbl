@@ -7,6 +7,11 @@ class GameManger(threading.Thread):
         threading.Thread.__init__(self)
 
         self.client_handler = client_handler
+        self.game = {
+            "game_data": {
+                "game_state": "waiting"
+            }
+        }
 
     def run(self):
         print("[Game Manager] Starting game manager")
@@ -21,12 +26,13 @@ class GameManger(threading.Thread):
                 break
 
         game = self.client_handler.receive_from_client(0)
-        if (game["state"] == "start"):
+        if (game["game_data"]["game_state"] == "start"):
             self.startGame()
 
 
     def startGame(self) -> None:
         print("[Game Manager] Game has started")
-        self.client_handler.send_to_all_clients({"state": "start"})
+        self.game["game_data"]["game_state"] = "active"
+        self.client_handler.send_to_all_clients(self.game)
 
                 

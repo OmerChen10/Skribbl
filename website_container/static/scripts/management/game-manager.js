@@ -2,8 +2,16 @@
 class GameManger {
 
     constructor() {
-        this.player = {username: null, isHost: null};
-        this.networkHandler = new NetworkHandler();      
+        this.networkHandler = new NetworkHandler();   
+        this.player_data = {
+            "username" : null,
+            "isHost" : null
+        }
+        this.game = {
+            "game_data" : {
+                "game_state" : null
+            }
+        }   
     }
 
     initiatePlayer() {
@@ -17,9 +25,10 @@ class GameManger {
                 return;
             }
             
-            this.player.username = username;
-            this.networkHandler.sendJson(this.player); // Send username to server
-            this.player = await this.networkHandler.receiveJson(); // Receive player object from server
+            this.player_data.username = username;
+            await this.sendPlayerUpdate(); // Send the username to the server
+            await this.getPlayerUpdate(); // Get whether the user is the host or not
+            console.log(this.player_data);
 
             resolve();
         });
@@ -34,28 +43,55 @@ class GameManger {
             var startGameButton = document.getElementById("start-game-button");
     
             usernameContainer.style.display = "none";
-            if (this.player.isHost) {
+            if (this.player_data.isHost) {
                 hostWaitScreen.style.display = "flex";
+                var cmd = prompt("Enter command");
             }
             else {
                 guestWaitScreen.style.display = "flex";
             }
 
-            var cmd = prompt("Enter command");
-
             if (cmd == "start") {
-                console.log("Starting game");
-                this.networkHandler.sendJson({state: "start"});
+                this.game.game_data.game_state = "start";
+                this.sendGameUpdate();
             }
 
-            console.log(await this.networkHandler.receiveJson());
+            resolve();
         });
     }
 
-    getServerUpdate() {
-        // Parse the data received from the server
-        // Update the game state
-        serverUpdate = self.networkHandler.receiveJson();
-        this.player = serverUpdate.player;
+    waitForGameToStart() {
+        return new Promise(async (resolve, reject) => {
+            // Wait for the game state to change to "active"
+            await this.getGameUpdate();
+            if (this.game) {
+                if (this.player_data.isHost) {
+                    document.getElementById("host-wait-screen").style.display = "none";
+                }
+                else {
+                    document.getElementById("guest-wait-screen").style.display = "none";
+                }
+
+                console.log("STARTING GAME");
+                resolve();
+            }
+        });
+    }
+            
+
+    async getGameUpdate() {
+        this.game = await this.networkHandler.receiveJson();
+    }
+
+    async sendGameUpdate() {
+        this.networkHandler.sendJson(this.game);
+    }
+
+    async getPlayerUpdate() {
+        this.player_data = await this.networkHandler.receiveJson();
+    }
+
+    async sendPlayerUpdate() {
+        this.networkHandler.sendJson(this.player_data);
     }
 }

@@ -42,16 +42,18 @@ class ClientHandler(threading.Thread):
 
 
     def receive_from_client(self, index: int):
-        while not self.clients[index].received_new_message():
+        while not self.clients[index].received_new_update():
             pass
         
-        return self.clients[index].received_messages.pop(0)
+        return self.clients[index].game
     
-    def send_to_client(self, index: int, json: dict):
-        self.clients[index].pending_messages.append(json)
+    def send_to_client(self, index: int, server_update: dict):
+        self.clients[index].game = server_update
+        self.clients[index].pending_messages.append(server_update)
 
-    def send_to_all_clients(self, json: dict):
+    def send_to_all_clients(self, server_update: dict):
         for client in self.clients:
-            client.pending_messages.append(json)
+            client.game = server_update
+            client.pending_messages.append(server_update)
          
     
