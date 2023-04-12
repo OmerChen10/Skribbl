@@ -1,6 +1,4 @@
-import websockets
-import asyncio
-import json
+import websockets, asyncio, json, time
 from colorama import Fore, Style
 
 
@@ -36,7 +34,7 @@ class Client():
         self.socket = new_socket
         await self.sendJson(self.player_data)
 
-    async def update(self):
+    async def start_update_loop(self):
         """ Update the player. """
 
         await asyncio.gather(self.receiveJson(), self.sendJson())
@@ -44,17 +42,23 @@ class Client():
     async def sendJson(self):
         """ Send a json to the player. """
 
-        for pending_message in self.pending_messages:
-            await self.socket.send(pending_message)
-            self.pending_messages.remove(pending_message)
+        while True:
+            for pending_message in self.pending_messages:
+                await self.socket.send(json.dumps(pending_message))
+                self.pending_messages.remove(pending_message)
+
+            await asyncio.sleep(0.1)
 
     async def receiveJson(self) -> dict:
         """ Receive a json from the player. """
 
-        received_json = await self.socket.recv()
-        received_json = json.loads(received_json)
-        self.received_messages.append(received_json)
-        self.new_message = True
+        while True:
+            received_json = await self.socket.recv()
+            received_json = json.loads(received_json)
+            self.received_messages.append(received_json)
+            self.new_message = True
+
+            await asyncio.sleep(0.1)
 
 
     def received_new_message(self) -> bool:

@@ -27,5 +27,6 @@ class GameManger(threading.Thread):
 
     def startGame(self) -> None:
         print("[Game Manager] Game has started")
+        self.client_handler.send_to_all_clients({"state": "start"})
 
                 

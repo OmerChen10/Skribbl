@@ -44,8 +44,11 @@ class GameManger {
             var cmd = prompt("Enter command");
 
             if (cmd == "start") {
+                console.log("Starting game");
                 this.networkHandler.sendJson({state: "start"});
             }
+
+            console.log(await this.networkHandler.receiveJson());
         });
     }
 

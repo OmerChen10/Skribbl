@@ -38,8 +38,7 @@ class ClientHandler(threading.Thread):
         self.clients.append(new_client)
         self.num_clients += 1
 
-        while True:
-            await new_client.update()
+        await new_client.start_update_loop()
 
 
     def receive_from_client(self, index: int):
@@ -47,5 +46,12 @@ class ClientHandler(threading.Thread):
             pass
         
         return self.clients[index].received_messages.pop(0)
+    
+    def send_to_client(self, index: int, json: dict):
+        self.clients[index].pending_messages.append(json)
+
+    def send_to_all_clients(self, json: dict):
+        for client in self.clients:
+            client.pending_messages.append(json)
          
     
