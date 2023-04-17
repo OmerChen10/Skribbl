@@ -45,18 +45,18 @@ class GameManger {
             usernameContainer.style.display = "none";
             if (this.player_data.isHost) {
                 hostWaitScreen.style.display = "flex";
-                var cmd = prompt("Enter command");
+
+                startGameButton.addEventListener("click", () => {
+                    this.game.game_data.game_state = "start";
+                    this.sendGameUpdate();
+                    resolve();
+                });
             }
+
             else {
                 guestWaitScreen.style.display = "flex";
+                resolve();
             }
-
-            if (cmd == "start") {
-                this.game.game_data.game_state = "start";
-                this.sendGameUpdate();
-            }
-
-            resolve();
         });
     }
 
@@ -64,7 +64,7 @@ class GameManger {
         return new Promise(async (resolve, reject) => {
             // Wait for the game state to change to "active"
             await this.getGameUpdate();
-            if (this.game) {
+            if (this.game.game_data.game_state == "active") {
                 if (this.player_data.isHost) {
                     document.getElementById("host-wait-screen").style.display = "none";
                 }
