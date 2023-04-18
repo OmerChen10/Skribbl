@@ -7,4 +7,5 @@ class GameConfig():
 
 class NetworkConfig():
 
-    website_port = 8080
+    website_port = 80
+    reconnection_enabled = False

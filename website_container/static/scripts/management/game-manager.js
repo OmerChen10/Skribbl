@@ -28,19 +28,18 @@ class GameManger {
             this.player_data.username = username;
             await this.sendPlayerUpdate(); // Send the username to the server
             await this.getPlayerUpdate(); // Get whether the user is the host or not
-            console.log(this.player_data);
 
             resolve();
         });
     }
 
     moveToWaitScreen() {
-        console.log("Moving to wait screen");
+        console.log("MOVING TO WAIT SCREEN");
         return new Promise(async (resolve, reject) => {
-            var usernameContainer = document.querySelector(".username");
-            var hostWaitScreen = document.getElementById("host-wait-screen");
-            var guestWaitScreen = document.getElementById("guest-wait-screen");
-            var startGameButton = document.getElementById("start-game-button");
+            let usernameContainer = document.querySelector(".username");
+            let hostWaitScreen = document.getElementById("host-wait-screen");
+            let guestWaitScreen = document.getElementById("guest-wait-screen");
+            let startGameButton = document.getElementById("start-game-button");
     
             usernameContainer.style.display = "none";
             if (this.player_data.isHost) {
@@ -65,19 +64,27 @@ class GameManger {
             // Wait for the game state to change to "active"
             await this.getGameUpdate();
             if (this.game.game_data.game_state == "active") {
-                if (this.player_data.isHost) {
-                    document.getElementById("host-wait-screen").style.display = "none";
-                }
-                else {
-                    document.getElementById("guest-wait-screen").style.display = "none";
-                }
-
-                console.log("STARTING GAME");
+                console.log("GAME STARTED");
                 resolve();
             }
         });
     }
+    moveToGameScreen() {
+        return new Promise((resolve, reject) => {
+            console.log("MOVING TO GAME SCREEN");
             
+            let gameContainer = document.querySelector(".game");
+
+            if (this.player_data.isHost) {
+                document.getElementById("host-wait-screen").style.display = "none";
+            }
+            else {
+                document.getElementById("guest-wait-screen").style.display = "none";
+            }
+
+            gameContainer.style.display = "flex";
+        });
+    }
 
     async getGameUpdate() {
         this.game = await this.networkHandler.receiveJson();
