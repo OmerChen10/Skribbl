@@ -1,4 +1,4 @@
-import websockets, asyncio, threading
+import websockets, asyncio, threading, Constants
 from client_container.client import Client
 
 
@@ -23,11 +23,12 @@ class ClientHandler(threading.Thread):
         await websockets.serve(self.handle_client, "0.0.0.0", self.game_code)
 
     async def handle_client(self, websocket):
-        for client in self.clients:
-            if (client.socket.remote_address[0] == websocket.remote_address[0]):
-                print(f"[Client Handler] Client {client.id} reconnected.")
-                client.reconnect(websocket)
-                return
+        if (Constants.NetworkConfig.reconnection_enabled):
+            for client in self.clients:
+                if (client.socket.remote_address[0] == websocket.remote_address[0]):
+                    print(f"[Client Handler] Client {client.id} reconnected.")
+                    client.reconnect(websocket)
+                    return
 
         new_client = Client(websocket, self.num_clients)
         await new_client.initialize()
