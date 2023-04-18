@@ -48,9 +48,19 @@ class ClientHandler(threading.Thread):
         
         return self.clients[index].game
     
+    def receive_from_client(self, client: Client):
+        while not client.received_new_update():
+            pass
+        
+        return client.game
+    
     def send_to_client(self, index: int, server_update: dict):
         self.clients[index].game = server_update
         self.clients[index].pending_messages.append(server_update)
+
+    def send_to_client(self, client: Client, server_update: dict):
+        client.game = server_update
+        client.pending_messages.append(server_update)
 
     def send_to_all_clients(self, server_update: dict):
         for client in self.clients:
