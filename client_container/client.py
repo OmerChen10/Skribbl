@@ -29,11 +29,11 @@ class Client():
         self.player_data["username"] = player_data["username"]
         await self.socket.send(json.dumps(self.player_data))
 
-    async def reconnect(self, new_socket: websockets):
+    def reconnect(self, new_socket: websockets):
         """ Reconnect the player. """
 
         self.socket = new_socket
-        await self.sendJson(self.player_data)
+        self.pending_messages.append(json.dumps(self.game))
 
     async def start_update_loop(self):
         """ Update the player. """

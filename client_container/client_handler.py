@@ -26,7 +26,7 @@ class ClientHandler(threading.Thread):
         for client in self.clients:
             if (client.socket.remote_address[0] == websocket.remote_address[0]):
                 print(f"[Client Handler] Client {client.id} reconnected.")
-                await client.reconnect(websocket)
+                client.reconnect(websocket)
                 return
 
         new_client = Client(websocket, self.num_clients)
