@@ -12,7 +12,8 @@ class Client():
         self.pending_messages = []
         self.player_data = {
             "username": None,
-            "isHost": True if self.id == 0 else False
+            "isHost": True if self.id == 0 else False,
+            "role": None
         }
         self.game = {
             "game_data": {
@@ -33,7 +34,7 @@ class Client():
         """ Reconnect the player. """
 
         self.socket = new_socket
-        self.pending_messages.append(json.dumps(self.game))
+        self.pending_messages.append(json.dumps(self.player_data))
 
     async def start_update_loop(self):
         """ Update the player. """

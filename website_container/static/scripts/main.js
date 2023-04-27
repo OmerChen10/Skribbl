@@ -5,4 +5,6 @@ async function main(){
     await gameManager.moveToWaitScreen();
     await gameManager.waitForGameToStart();
     await gameManager.moveToGameScreen();
+    
+    await gameManager.gameLoop(); // Start the game loop.
 }

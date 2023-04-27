@@ -2,16 +2,17 @@
 class GameManger {
 
     constructor() {
-        this.networkHandler = new NetworkHandler();   
+        this.networkHandler = new NetworkHandler();
         this.player_data = {
-            "username" : null,
-            "isHost" : null
+            "username": null,
+            "isHost": null,
+            "role": null
         }
         this.game = {
-            "game_data" : {
-                "game_state" : null
+            "game_data": {
+                "game_state": null
             }
-        }   
+        }
     }
 
     initiatePlayer() {
@@ -24,7 +25,7 @@ class GameManger {
                 alert('Please enter a username');
                 return;
             }
-            
+
             this.player_data.username = username;
             await this.sendPlayerUpdate(); // Send the username to the server
             await this.getPlayerUpdate(); // Get whether the user is the host or not
@@ -32,7 +33,6 @@ class GameManger {
             resolve();
         });
     }
-
     moveToWaitScreen() {
         console.log("MOVING TO WAIT SCREEN");
         return new Promise(async (resolve, reject) => {
@@ -40,7 +40,7 @@ class GameManger {
             let hostWaitScreen = document.getElementById("host-wait-screen");
             let guestWaitScreen = document.getElementById("guest-wait-screen");
             let startGameButton = document.getElementById("start-game-button");
-    
+
             usernameContainer.style.display = "none";
             if (this.player_data.isHost) {
                 hostWaitScreen.style.display = "flex";
@@ -58,7 +58,6 @@ class GameManger {
             }
         });
     }
-
     waitForGameToStart() {
         return new Promise(async (resolve, reject) => {
             // Wait for the game state to change to "active"
@@ -72,7 +71,7 @@ class GameManger {
     moveToGameScreen() {
         return new Promise((resolve, reject) => {
             console.log("MOVING TO GAME SCREEN");
-            
+
             let gameContainer = document.querySelector(".game");
 
             if (this.player_data.isHost) {
@@ -84,6 +83,21 @@ class GameManger {
 
             gameContainer.style.display = "flex";
         });
+    }
+    async gameLoop() {
+        while (true){
+            await this.getPlayerUpdate();
+            console.log("updaye received")
+            //await this.getGameUpdate();
+
+            if (this.player_data.role == "drawer"){
+                console.log("DRAWER");
+            }
+
+            else {
+                console.log("GUESSER");
+            }
+        }
     }
 
     async getGameUpdate() {
