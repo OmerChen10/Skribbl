@@ -5,9 +5,9 @@ class NetworkHandler{
         this.player = player;
         this.receivedNewMessage = false;
 
-        const Headers = {
-            GAME_STATE: 0,
-            IS_HOST: 1
+        this.Headers = {
+            GAME_STATE: 1,
+            IS_HOST: 2
         }
     }
 
@@ -38,17 +38,6 @@ class NetworkHandler{
         return (this.ws.readyState == WebSocket.OPEN);
     }
 
-    waitForBoolean(variable){
-        return new Promise((resolve, reject) => {
-            let interval = setInterval(() => {
-                if(variable){
-                    clearInterval(interval);
-                    resolve();
-                }
-            }, 100);
-        });
-    }     
-
     send(header, data){
         if(this.getSocketState()){
             this.ws.send(header + "-" + data + "END");
@@ -61,19 +50,33 @@ class NetworkHandler{
         }
     }
 
+    waitForNewMessage(){
+        return new Promise((resolve, reject) => {
+            let interval = setInterval(() => {
+                if(this.receivedNewMessage){
+                    this.receivedNewMessage = false;
+                    clearInterval(interval);
+                    resolve();
+                }
+            }, 100);
+        });
+    }
+
     handlePendingRequests(msg){
 
         let pendingRequests = msg.split("END");
-        for (let i = 0; i < pendingRequests.length; i++) {
+        for (let i = 0; i < pendingRequests.length - 1; i++) {
             let request = pendingRequests[i].split("-");
-            let header = request[0];
+            let header = parseInt(request[0]);
             let data = JSON.parse(request[1]).value;
 
             switch (header) {
-                case "0":
-                    this.player.game.game_data.game_state = data;
+                case this.Headers.GAME_STATE:
+                    if (data == "ACTIVE") {
+                        document.dispatchEvent(new CustomEvent("game-started"));
+                    }
                     break;
-                case "1":
+                case this.Headers.IS_HOST:
                     this.player.player_data.isHost = data;
                     break;
                 default:

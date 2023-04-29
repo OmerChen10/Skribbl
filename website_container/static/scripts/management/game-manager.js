@@ -1,6 +1,5 @@
 
 class GameManger {
-
     constructor() {
         this.networkHandler = new NetworkHandler(this);
         this.player_data = {
@@ -9,9 +8,12 @@ class GameManger {
             "role": null
         }
         this.game = {
-            "game_data": {
-                "game_state": null
-            }
+            "game_state": null
+        }
+
+        this.Headers = {
+            GAME_STATE: 1,
+            IS_HOST: 2
         }
     }
 
@@ -46,26 +48,17 @@ class GameManger {
                 hostWaitScreen.style.display = "flex";
 
                 startGameButton.addEventListener("click", () => {
-                    this.game.game_data.game_state = "start";
-                    this.sendGameUpdate();
-                    resolve();
+                    this.networkHandler.send(this.Headers.GAME_STATE, "START")
                 });
             }
 
             else {
                 guestWaitScreen.style.display = "flex";
-                resolve();
             }
-        });
-    }
-    waitForGameToStart() {
-        return new Promise(async (resolve, reject) => {
-            // Wait for the game state to change to "active"
-            await this.getGameUpdate();
-            if (this.game.game_data.game_state == "active") {
-                console.log("GAME STARTED");
+
+            document.addEventListener("game-started", () => {
                 resolve();
-            }
+            });
         });
     }
     moveToGameScreen() {

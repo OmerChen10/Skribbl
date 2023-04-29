@@ -1,7 +1,7 @@
 import threading, random, time
 from client_container.network_handler import NetworkHandler
 from client_container.client_handler import ClientHandler
-from client_container import Headers
+from Constants import Headers
 
 
 class GameManger(threading.Thread):
@@ -20,14 +20,14 @@ class GameManger(threading.Thread):
     def waitForStart(self) -> None:
         print("[Game Manager] Waiting for game to start")
 
-        while True: # TODO: Add thread events instead of while true loop.
-            if (self.network_handler.host is not None and self.network_handler.host.ready):
-                break
+        while (self.network_handler.host is None):
+            time.sleep(0.1)
 
+        self.network_handler.host.ready.wait()
         self.startGame()
 
-
     def startGame(self) -> None:
+        print("[Game Manager] Starting game")
         self.network_handler.send_to_all_clients(Headers.GAME_STATE, "ACTIVE")
         self.num_of_players = self.network_handler.num_clients
 

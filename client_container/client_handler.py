@@ -1,5 +1,5 @@
 import threading, json, asyncio, websockets
-from client_container import Headers
+from Constants import Headers
 
 
 class ClientHandler():
@@ -12,7 +12,7 @@ class ClientHandler():
         self.pending_messages = []
         self.received_messages = []
 
-        if (self.id == 1): self.ready = False
+        self.ready: threading.Event = threading.Event()
         
         self.thread = threading.Thread(target=self.initialize_client)
         self.thread.start()
@@ -77,13 +77,13 @@ class ClientHandler():
         """ Handles the client's requests. """
 
         handlers = {
-            Headers.GAME_STATE: self.handle_game_state
+            str(Headers.GAME_STATE): self.handle_game_state
         }
 
         while True:
-            requests = self.receive().split("END")
+            requests = self.receive().split("END")[:-1] # Remove the last element, which is an empty string
             for request in requests:
-                header = int(request.split("-")[0])
+                header = request.split("-")[0]
                 data = request.split("-")[1]
 
                 handlers[header](data)
@@ -92,6 +92,6 @@ class ClientHandler():
         """ Handles the client's game state request. """
 
         if (data == "START"):
-            self.ready = True
+            self.ready.set()
 
 

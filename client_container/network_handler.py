@@ -1,6 +1,6 @@
 import websockets, asyncio, threading, Constants, json
 from client_container.client_handler import ClientHandler
-from client_container import Headers
+from Constants import Headers
 
 
 class NetworkHandler(threading.Thread):
@@ -35,7 +35,8 @@ class NetworkHandler(threading.Thread):
         new_client = ClientHandler(websocket, self.num_clients)
         self.clients.append(new_client)
 
-        if (self.num_clients == 1): self.host = new_client
+        if (self.num_clients == 1): 
+            self.host = new_client
 
         await new_client.start_update_loop()
 
@@ -43,6 +44,9 @@ class NetworkHandler(threading.Thread):
     def send_to_all_clients(self, header: int, server_msg) -> None:
         for client in self.clients:
             client.send(header, server_msg)
+
+
+
 
 
 

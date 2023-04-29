@@ -9,8 +9,8 @@ class Skribbl():
     def __init__(self) -> None:
         self.game_code = self._randomize_game_code()
         self.website = WebsiteServer(self.game_code)
-        self.client_handler = NetworkHandler(self.game_code)
-        self.game_manager = GameManger(self.client_handler)
+        self.network_manager = NetworkHandler(self.game_code)
+        self.game_manager = GameManger(self.network_manager)
 
 
     def start(self):
@@ -19,8 +19,8 @@ class Skribbl():
               + Style.RESET_ALL)
         
         self.website.start()
-        self.client_handler.start()
-        # self.game_manager.start()
+        self.network_manager.start()
+        self.game_manager.start()
 
 
     def _randomize_game_code(self) -> str:
