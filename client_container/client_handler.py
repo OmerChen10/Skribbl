@@ -8,15 +8,14 @@ class ClientHandler():
     def __init__(self, socket: websockets, id: int) -> None:
         self.socket = socket
         self.id = id
-        self.new_update_received = False
+        self.received_new_message: threading.Event = threading.Event()
         self.pending_messages = []
         self.received_messages = []
 
         self.ready: threading.Event = threading.Event()
-        
+
         self.thread = threading.Thread(target=self.initialize_client)
         self.thread.start()
-
 
     async def start_update_loop(self):
         """ Start receiving and sending messages. """
@@ -38,14 +37,14 @@ class ClientHandler():
             client_update = await self.socket.recv()
             self.received_messages.append(client_update)
 
-            self.new_update_received = True
+            self.received_new_message.set()
             await asyncio.sleep(0.1)
 
     def received_new_update(self) -> bool:
         """ Check if the player has received a new message. """
 
-        if (self.new_update_received):
-            self.new_update_received = False
+        if (self.received_new_message):
+            self.received_new_message = False
             return True
 
         return False
@@ -54,8 +53,8 @@ class ClientHandler():
         if (self.received_messages != []):
             return self.received_messages.pop(0)
 
-        while not self.received_new_update():
-            pass
+        self.received_new_message.wait()
+        self.received_new_message.clear()
 
         return self.received_messages.pop(0)
 
@@ -81,17 +80,16 @@ class ClientHandler():
         }
 
         while True:
-            requests = self.receive().split("END")[:-1] # Remove the last element, which is an empty string
+            # Remove the last element, which is an empty string
+            requests = self.receive().split("END")[:-1]
             for request in requests:
                 header = request.split("-")[0]
                 data = request.split("-")[1]
 
                 handlers[header](data)
-            
+
     def handle_game_state(self, data: str) -> None:
         """ Handles the client's game state request. """
 
         if (data == "START"):
             self.ready.set()
-
-
