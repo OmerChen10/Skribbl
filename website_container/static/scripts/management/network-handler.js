@@ -52,13 +52,9 @@ class NetworkHandler{
 
     waitForNewMessage(){
         return new Promise((resolve, reject) => {
-            let interval = setInterval(() => {
-                if(this.receivedNewMessage){
-                    this.receivedNewMessage = false;
-                    clearInterval(interval);
-                    resolve();
-                }
-            }, 100);
+            this.ws.addEventListener("message", () => {
+                resolve();
+            });
         });
     }
 
