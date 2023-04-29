@@ -1,5 +1,6 @@
 import websockets, asyncio, threading, Constants, json
 from client_container.client_handler import ClientHandler
+from client_container import Headers
 
 
 class NetworkHandler(threading.Thread):
@@ -9,6 +10,7 @@ class NetworkHandler(threading.Thread):
         self.game_code: str = game_code
         self.clients: list[ClientHandler] = []
         self.num_clients: int = 0
+        self.host = None
 
     def run(self):
         print("[Client Handler] Starting network handler")
@@ -33,7 +35,14 @@ class NetworkHandler(threading.Thread):
         new_client = ClientHandler(websocket, self.num_clients)
         self.clients.append(new_client)
 
+        if (self.num_clients == 1): self.host = new_client
+
         await new_client.start_update_loop()
+
+
+    def send_to_all_clients(self, header: int, server_msg) -> None:
+        for client in self.clients:
+            client.send(header, server_msg)
 
 
 

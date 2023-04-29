@@ -1,19 +1,16 @@
 import threading, random, time
-from client_container import NetworkHandler, ClientHandler
+from client_container.network_handler import NetworkHandler
+from client_container.client_handler import ClientHandler
+from client_container import Headers
 
 
 class GameManger(threading.Thread):
-    def __init__(self, client_handler: NetworkHandler) -> None:
+    def __init__(self, network_handler: NetworkHandler) -> None:
         threading.Thread.__init__(self)
 
-        self.client_handler = client_handler
+        self.network_handler: NetworkHandler = network_handler
         self.num_of_players = 0
         self.players = None
-        self.game = {
-            "game_data": {
-                "game_state": "waiting"
-            }
-        }
 
     def run(self):
         print("[Game Manager] Starting game manager")
@@ -24,25 +21,21 @@ class GameManger(threading.Thread):
         print("[Game Manager] Waiting for game to start")
 
         while True: # TODO: Add thread events instead of while true loop.
-            if (self.client_handler.host is not None):
+            if (self.network_handler.host is not None and self.network_handler.host.ready):
                 break
 
-        game = self.client_handler.receive_from_client(self.client_handler.host)
-        if (game["game_data"]["game_state"] == "start"):
-            self.startGame()
+        self.startGame()
 
 
     def startGame(self) -> None:
-        print("[Game Manager] Starting the game")
-        self.game["game_data"]["game_state"] = "active"
-        self.client_handler.send_to_all_clients(self.game)
-        self.num_of_players = self.client_handler.num_clients
+        self.network_handler.send_to_all_clients(Headers.GAME_STATE, "ACTIVE")
+        self.num_of_players = self.network_handler.num_clients
 
-        self.start_game_loop()
+        # self.start_game_loop()
 
     def start_game_loop(self) -> None:
 
-        remaining_drawers = self.client_handler.clients
+        remaining_drawers = self.network_handler.clients
 
         for current_round in range(self.num_of_players):
             print(f"[Game Manager] Starting round {current_round}")
@@ -54,14 +47,14 @@ class GameManger(threading.Thread):
     def send_current_roles(self, drawer: ClientHandler) -> None:
         """Send each player it's role for the current round."""
 
-        for player in self.client_handler.clients:
+        for player in self.network_handler.clients:
             if (player is drawer):
                 player.player_data["role"] = "drawer"
-                self.client_handler.send_to_client(player, player.player_data)
+                self.network_handler.send_to_client(player, player.player_data)
 
             else:
                 player.player_data["role"] = "guesser"
-                self.client_handler.send_to_client(player, player.player_data)
+                self.network_handler.send_to_client(player, player.player_data)
 
 
         

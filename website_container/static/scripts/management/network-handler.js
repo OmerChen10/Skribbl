@@ -38,22 +38,16 @@ class NetworkHandler{
         return (this.ws.readyState == WebSocket.OPEN);
     }
 
-    waitForNewMessage() {
-        return new Promise(resolve => {
-            const checkPredicate = () => {
-                if (this.receivedNewMessage == true) {
-                    this.receivedNewMessage = false;
+    waitForBoolean(variable){
+        return new Promise((resolve, reject) => {
+            let interval = setInterval(() => {
+                if(variable){
+                    clearInterval(interval);
                     resolve();
-                } 
-                else {
-                    setTimeout(checkPredicate, 10);
                 }
-            };
-
-          checkPredicate();
+            }, 100);
         });
-    }      
-
+    }     
 
     send(header, data){
         if(this.getSocketState()){
