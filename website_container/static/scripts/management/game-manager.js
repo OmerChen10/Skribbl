@@ -2,7 +2,7 @@
 class GameManger {
 
     constructor() {
-        this.networkHandler = new NetworkHandler();
+        this.networkHandler = new NetworkHandler(this);
         this.player_data = {
             "username": null,
             "isHost": null,
@@ -15,7 +15,7 @@ class GameManger {
         }
     }
 
-    initiatePlayer() {
+    async initiatePlayer() {
         // This function checks if the user is the host of the game.
         return new Promise(async (resolve, reject) => {
             await this.networkHandler.connectToGameServer();
@@ -27,8 +27,8 @@ class GameManger {
             }
 
             this.player_data.username = username;
-            await this.sendPlayerUpdate(); // Send the username to the server
-            await this.getPlayerUpdate(); // Get whether the user is the host or not
+            this.networkHandler.sendRaw(username);
+            await this.networkHandler.waitForNewMessage();
 
             resolve();
         });
@@ -98,21 +98,5 @@ class GameManger {
                 console.log("GUESSER");
             }
         }
-    }
-
-    async getGameUpdate() {
-        this.game = await this.networkHandler.receiveJson();
-    }
-
-    async sendGameUpdate() {
-        this.networkHandler.sendJson(this.game);
-    }
-
-    async getPlayerUpdate() {
-        this.player_data = await this.networkHandler.receiveJson();
-    }
-
-    async sendPlayerUpdate() {
-        this.networkHandler.sendJson(this.player_data);
     }
 }

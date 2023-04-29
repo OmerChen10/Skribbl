@@ -1,9 +1,9 @@
 import threading, random, time
-from client_container import ClientHandler, client
+from client_container import NetworkHandler, ClientHandler
 
 
 class GameManger(threading.Thread):
-    def __init__(self, client_handler: ClientHandler) -> None:
+    def __init__(self, client_handler: NetworkHandler) -> None:
         threading.Thread.__init__(self)
 
         self.client_handler = client_handler
@@ -51,7 +51,7 @@ class GameManger(threading.Thread):
             self.send_current_roles(drawer) # Send each player it's role.
 
 
-    def send_current_roles(self, drawer: client) -> None:
+    def send_current_roles(self, drawer: ClientHandler) -> None:
         """Send each player it's role for the current round."""
 
         for player in self.client_handler.clients:

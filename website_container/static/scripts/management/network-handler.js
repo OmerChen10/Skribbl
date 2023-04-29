@@ -1,7 +1,14 @@
 
 class NetworkHandler{
-    constructor(){
+    constructor(player){
         this.ws = null;
+        this.player = player;
+        this.receivedNewMessage = false;
+
+        const Headers = {
+            GAME_STATE: 0,
+            IS_HOST: 1
+        }
     }
 
     connectToGameServer(){
@@ -18,6 +25,11 @@ class NetworkHandler{
             this.ws.onerror = function (event) {
                 reject();
             }
+
+            this.ws.onmessage = function (event) {
+                this.receivedNewMessage = true;
+                this.handlePendingRequests(event.data);
+            }.bind(this);
         });
     }
 
@@ -26,28 +38,55 @@ class NetworkHandler{
         return (this.ws.readyState == WebSocket.OPEN);
     }
 
-    send(message){
-        this.ws.send(message);
-    }
-
-    receive(){
-        return new Promise((resolve, reject) => {
-            this.ws.onmessage = function (event) {
-                resolve(event.data);
+    waitForNewMessage() {
+        return new Promise(resolve => {
+            const checkPredicate = () => {
+                if (this.receivedNewMessage == true) {
+                    this.receivedNewMessage = false;
+                    resolve();
+                } 
+                else {
+                    setTimeout(checkPredicate, 10);
+                }
             };
+
+          checkPredicate();
         });
+    }      
+
+
+    send(header, data){
+        if(this.getSocketState()){
+            this.ws.send(header + "-" + data + "END");
+        }
     }
 
-    sendJson(json){
-        this.ws.send(JSON.stringify(json));
+    sendRaw(data){
+        if(this.getSocketState()){
+            this.ws.send(data);
+        }
     }
 
-    receiveJson(){
-        return new Promise((resolve, reject) => {
-            this.ws.onmessage = function (event) {
-                resolve(JSON.parse(event.data));
-            };
-        });
+    handlePendingRequests(msg){
+
+        let pendingRequests = msg.split("END");
+        for (let i = 0; i < pendingRequests.length; i++) {
+            let request = pendingRequests[i].split("-");
+            let header = request[0];
+            let data = JSON.parse(request[1]).value;
+
+            switch (header) {
+                case "0":
+                    this.player.game.game_data.game_state = data;
+                    break;
+                case "1":
+                    this.player.player_data.isHost = data;
+                    break;
+                default:
+                    break;
+            }
+        }
+
     }
 }
 

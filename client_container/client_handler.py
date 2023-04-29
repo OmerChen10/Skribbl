@@ -1,72 +1,83 @@
-import websockets, asyncio, threading, Constants
-from client_container.client import Client
+import threading, json, asyncio, websockets
 
 
-class ClientHandler(threading.Thread):
-    def __init__(self, game_code: str):
-        threading.Thread.__init__(self)
+class ClientHandler():
+    """ Handles the client's messages. """
 
-        self.game_code: str = game_code
-        self.clients: list[Client] = []
-        self.num_clients: int = 0
-        self.host: Client = None
-
-    def run(self):
-        print("[Client Handler] Starting client handler")
-
-        asyncio.set_event_loop(asyncio.new_event_loop())
-        self.loop = asyncio.get_event_loop()
-        self.loop.run_until_complete(self.start_server())
-        self.loop.run_forever()
-
-    async def start_server(self):
-        await websockets.serve(self.handle_client, "0.0.0.0", self.game_code)
-
-    async def handle_client(self, websocket):
-        if (Constants.NetworkConfig.reconnection_enabled):
-            for client in self.clients:
-                if (client.socket.remote_address[0] == websocket.remote_address[0]):
-                    print(f"[Client Handler] Client {client.id} reconnected.")
-                    client.reconnect(websocket)
-                    return
-
-        new_client = Client(websocket, self.num_clients)
-        await new_client.initialize()
-
-        if (self.num_clients == 0): # Make the first player the host
-            self.host = new_client
-
-        self.clients.append(new_client)
-        self.num_clients += 1
-
-        await new_client.start_update_loop()
-
-
-    def receive_from_client(self, index: int):
-        while not self.clients[index].received_new_update():
-            pass
-
-        return self.clients[index].game
-
-    def receive_from_client(self, client: Client):
-        while not client.received_new_update():
-            pass
+    def __init__(self, socket: websockets, id: int) -> None:
+        self.socket = socket
+        self.id = id
+        self.new_update_received = False
+        self.pending_messages = []
+        self.received_messages = []
         
-        return client.game
-    
-    def send_to_client(self, index: int, server_update: dict):
-        self.clients[index].game = server_update
-        self.clients[index].pending_messages.append(server_update)
-
-    def send_to_client(self, client: Client, server_update: dict):
-        client.game = server_update
-        client.pending_messages.append(server_update)
-
-    def send_to_all_clients(self, server_update: dict):
-        for client in self.clients:
-            client.game = server_update
-            client.pending_messages.append(server_update)
+        self.thread = threading.Thread(target=self.initialize_client)
+        self.thread.start()
 
 
-         
-    
+    async def start_update_loop(self):
+        """ Start receiving and sending messages. """
+
+        await asyncio.gather(self.start_receiving_loop(), self.start_sending_loop())
+
+    async def start_sending_loop(self):
+
+        while True:
+            for pending_message in self.pending_messages:
+                await self.socket.send(pending_message)
+                self.pending_messages.remove(pending_message)
+
+            await asyncio.sleep(0.1)
+
+    async def start_receiving_loop(self) -> dict:
+
+        while True:
+            client_update = await self.socket.recv()
+            self.received_messages.append(client_update)
+
+            self.new_update_received = True
+            await asyncio.sleep(0.1)
+
+    def received_new_update(self) -> bool:
+        """ Check if the player has received a new message. """
+
+        if (self.new_update_received):
+            self.new_update_received = False
+            return True
+
+        return False
+
+    def receive(self):
+        if (self.received_messages != []):
+            return self.received_messages.pop(0)
+
+        while not self.received_new_update():
+            pass
+
+        return self.received_messages.pop(0)
+
+    def send(self, header: int, server_msg):
+        msg_data = json.dumps({"value": server_msg})
+        msg = f"{header}-{msg_data}END"
+        self.pending_messages.append(msg)
+
+    def initialize_client(self) -> None:
+        """ Initializes the client. """
+
+        client_name = self.receive()
+        self.name = client_name
+
+        print(f"[Client Handler] Client {self.id} has connected with name {self.name}.")
+
+        self.send(Headers.IS_HOST, (self.id == 1))
+
+
+    def handle_requests(self) -> None:
+        """ Handles the client's requests. """
+
+        pass
+
+
+class Headers():
+    GAME_STATE = 0
+    IS_HOST = 1
