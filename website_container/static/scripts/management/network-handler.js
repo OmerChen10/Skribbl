@@ -80,7 +80,7 @@ class NetworkHandler{
                     break;
 
                 case this.Headers.PLAYER_ROLE:
-                    this.player_data.role = data;
+                    this.player.player_data.role = data;
                     document.dispatchEvent(new CustomEvent("new-player-role"));
                     break;
 

@@ -83,7 +83,6 @@ class ClientHandler():
             # Remove the last element, which is an empty string
             requests = self.receive().split("END")[:-1]
             for request in requests:
-                print(request)
                 header = request.split("/")[0]
                 data = request.split("/")[1]
 

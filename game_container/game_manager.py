@@ -10,7 +10,8 @@ class GameManger(threading.Thread):
 
         self.network_handler: NetworkHandler = network_handler
         self.num_of_players = 0
-        self.remaining_drawers = self.network_handler.clients
+        self.remaining_drawers = None
+        self.current_round = 0
 
     def run(self):
         print("[Game Manager] Starting game manager")
@@ -29,13 +30,15 @@ class GameManger(threading.Thread):
     def startGame(self) -> None:
         print("[Game Manager] Starting game")
         self.num_of_players = self.network_handler.num_clients
+        self.remaining_drawers = self.network_handler.clients.copy()
 
         self.start_game_loop()
 
     def start_game_loop(self) -> None:
 
         for current_round in range(self.num_of_players):
-            print(f"[Game Manager] Starting round {current_round}")
+            self.current_round = current_round + 1
+            print(f"[Game Manager] Starting round {self.current_round}")
             self.network_handler.send_to_all_clients(Headers.GAME_STATE, "init-round")
             
             self.send_current_roles() # Send each player it's role.
@@ -46,7 +49,12 @@ class GameManger(threading.Thread):
     def send_current_roles(self) -> None:
         """Send each player it's role for the current round."""
 
-        drawer = self.remaining_drawers[random.randint(0, self.num_of_players - 1)]
+        if (self.num_of_players == 1):
+            drawer = self.network_handler.clients[0] # If there is only one player, he is the drawer.
+
+        else:
+            drawer = self.remaining_drawers[random.randint(0, len(self.remaining_drawers) - 1)]
+        
         self.remaining_drawers.remove(drawer)
 
         for player in self.network_handler.clients:
@@ -55,6 +63,8 @@ class GameManger(threading.Thread):
 
             else:
                 player.send(Headers.PLAYER_ROLE, "guesser")
+
+        print("[Game Manager] Role assignment finished.")
 
 
         

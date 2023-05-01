@@ -79,21 +79,8 @@ class GameManger {
     }
 
     async roundInit(){
+        console.log("INITIATING ROUND");
         await waitForEvent("new-player-role")
         console.log("NEW ROLE RECEIVED: " + this.player_data.role)
-    }
-
-    async gameLoop() {
-        while (true){
-
-
-            if (this.player_data.role == "drawer"){
-                console.log("DRAWER");
-            }
-
-            else {
-                console.log("GUESSER");
-            }
-        }
     }
 }
