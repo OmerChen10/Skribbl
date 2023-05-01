@@ -48,7 +48,7 @@ class GameManger {
                 hostWaitScreen.style.display = "flex";
 
                 startGameButton.addEventListener("click", () => {
-                    this.networkHandler.send(this.Headers.GAME_STATE, "START")
+                    this.networkHandler.send(this.Headers.GAME_STATE, "host-ready")
                 });
             }
 
@@ -56,9 +56,9 @@ class GameManger {
                 guestWaitScreen.style.display = "flex";
             }
 
-            document.addEventListener("game-started", () => {
-                resolve();
-            });
+
+            await waitForEvent("init-round");
+            resolve();
         });
     }
     moveToGameScreen() {
@@ -77,11 +77,15 @@ class GameManger {
             gameContainer.style.display = "flex";
         });
     }
+
+    async roundInit(){
+        await waitForEvent("new-player-role")
+        console.log("NEW ROLE RECEIVED: " + this.player_data.role)
+    }
+
     async gameLoop() {
         while (true){
-            await this.getPlayerUpdate();
-            console.log("updaye received")
-            //await this.getGameUpdate();
+
 
             if (this.player_data.role == "drawer"){
                 console.log("DRAWER");

@@ -10,7 +10,7 @@ class GameManger(threading.Thread):
 
         self.network_handler: NetworkHandler = network_handler
         self.num_of_players = 0
-        self.players = None
+        self.remaining_drawers = self.network_handler.clients
 
     def run(self):
         print("[Game Manager] Starting game manager")
@@ -28,33 +28,33 @@ class GameManger(threading.Thread):
 
     def startGame(self) -> None:
         print("[Game Manager] Starting game")
-        self.network_handler.send_to_all_clients(Headers.GAME_STATE, "ACTIVE")
         self.num_of_players = self.network_handler.num_clients
 
-        # self.start_game_loop()
+        self.start_game_loop()
 
     def start_game_loop(self) -> None:
 
-        remaining_drawers = self.network_handler.clients
-
         for current_round in range(self.num_of_players):
             print(f"[Game Manager] Starting round {current_round}")
-            drawer = remaining_drawers[random.randint(0, self.num_of_players - 1)]
+            self.network_handler.send_to_all_clients(Headers.GAME_STATE, "init-round")
+            
+            self.send_current_roles() # Send each player it's role.
 
-            self.send_current_roles(drawer) # Send each player it's role.
+            time.sleep(10)
 
 
-    def send_current_roles(self, drawer: ClientHandler) -> None:
+    def send_current_roles(self) -> None:
         """Send each player it's role for the current round."""
+
+        drawer = self.remaining_drawers[random.randint(0, self.num_of_players - 1)]
+        self.remaining_drawers.remove(drawer)
 
         for player in self.network_handler.clients:
             if (player is drawer):
-                player.player_data["role"] = "drawer"
-                self.network_handler.send_to_client(player, player.player_data)
+                player.send(Headers.PLAYER_ROLE, "drawer")
 
             else:
-                player.player_data["role"] = "guesser"
-                self.network_handler.send_to_client(player, player.player_data)
+                player.send(Headers.PLAYER_ROLE, "guesser")
 
 
         

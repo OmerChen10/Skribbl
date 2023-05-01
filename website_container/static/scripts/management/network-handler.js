@@ -7,7 +7,8 @@ class NetworkHandler{
 
         this.Headers = {
             GAME_STATE: 1,
-            IS_HOST: 2
+            IS_HOST: 2,
+            PLAYER_ROLE: 3
         }
     }
 
@@ -40,7 +41,7 @@ class NetworkHandler{
 
     send(header, data){
         if(this.getSocketState()){
-            this.ws.send(header + "-" + data + "END");
+            this.ws.send(header + "/" + data + "END");
         }
     }
 
@@ -62,19 +63,27 @@ class NetworkHandler{
 
         let pendingRequests = msg.split("END");
         for (let i = 0; i < pendingRequests.length - 1; i++) {
-            let request = pendingRequests[i].split("-");
+            let request = pendingRequests[i].split("/");
+            console.log(request);
             let header = parseInt(request[0]);
             let data = JSON.parse(request[1]).value;
 
             switch (header) {
                 case this.Headers.GAME_STATE:
-                    if (data == "ACTIVE") {
-                        document.dispatchEvent(new CustomEvent("game-started"));
+                    if (data == "init-round") {
+                        document.dispatchEvent(new CustomEvent("init-round"));
                     }
                     break;
+
                 case this.Headers.IS_HOST:
                     this.player.player_data.isHost = data;
                     break;
+
+                case this.Headers.PLAYER_ROLE:
+                    this.player_data.role = data;
+                    document.dispatchEvent(new CustomEvent("new-player-role"));
+                    break;
+
                 default:
                     break;
             }

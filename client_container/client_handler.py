@@ -60,7 +60,7 @@ class ClientHandler():
 
     def send(self, header: int, server_msg):
         msg_data = json.dumps({"value": server_msg})
-        msg = f"{header}-{msg_data}END"
+        msg = f"{header}/{msg_data}END"
         self.pending_messages.append(msg)
 
     def initialize_client(self) -> None:
@@ -83,13 +83,14 @@ class ClientHandler():
             # Remove the last element, which is an empty string
             requests = self.receive().split("END")[:-1]
             for request in requests:
-                header = request.split("-")[0]
-                data = request.split("-")[1]
+                print(request)
+                header = request.split("/")[0]
+                data = request.split("/")[1]
 
                 handlers[header](data)
 
     def handle_game_state(self, data: str) -> None:
         """ Handles the client's game state request. """
-
-        if (data == "START"):
+  
+        if (data == "host-ready"):
             self.ready.set()

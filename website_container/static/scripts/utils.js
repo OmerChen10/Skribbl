@@ -1,11 +1,8 @@
  
-function waitForVariable(variable, wantedValue){
+function waitForEvent(eventName){
     return new Promise((resolve, reject) => {
-        let interval = setInterval(() => {
-            if(variable == wantedValue){
-                clearInterval(interval);
-                resolve();
-            }
-        }, 100);
+        document.addEventListener(eventName, () => {
+            resolve();
+        });
     });
 }    
