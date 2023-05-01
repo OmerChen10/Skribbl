@@ -55,8 +55,8 @@ class GameManger {
             else {
                 guestWaitScreen.style.display = "flex";
             }
-
-            await waitForEvent("init-round");
+            
+            await waitForEvent("game-started");
             resolve();
         });
     }
@@ -64,15 +64,10 @@ class GameManger {
         return new Promise((resolve, reject) => {
             console.log("Moving to game screen");
 
+            document.getElementById("host-wait-screen").style.display = "none";
+            document.getElementById("guest-wait-screen").style.display = "none";
+
             let gameContainer = document.querySelector(".game");
-
-            if (this.player_data.isHost) {
-                document.getElementById("host-wait-screen").style.display = "none";
-            }
-            else {
-                document.getElementById("guest-wait-screen").style.display = "none";
-            }
-
             gameContainer.style.display = "flex";
         });
     }
@@ -80,7 +75,46 @@ class GameManger {
     async roundInit(){
         console.log("Initiating round");
         await waitForEvent("new-player-role")
-        console.log("New role received: " + this.player_data.isDrawer)
-        
+        console.log("Drawer: " + this.player_data.isDrawer)
+        if (this.player_data.isDrawer) {
+            this.canvas.enableDrawing();
+        }
+        else {
+            this.canvas.disableDrawing();
+        }
+    }
+
+    async runRound() {
+        return new Promise(async (resolve, reject) => {
+            console.log("New round started");
+            document.addEventListener("end-round", () => {
+                console.log("Round ended.");
+                resolve();
+            });
+
+            if (this.player_data.isDrawer) {
+                await this.canvas.enableDrawing();
+            }
+            else {
+                await this.canvas.disableDrawing();
+            }
+        });
+    }
+
+    async startGameLoop() {
+        return new Promise(async (resolve, reject) => {
+            console.log("Starting game loop");
+            await this.moveToGameScreen();
+            document.addEventListener("end-game", () => {
+                this.networkHandler.stop();
+                resolve();
+            });
+
+            while (true) {
+                await waitForEvent("init-round");
+                await this.roundInit();
+                await this.runRound();
+            }
+        });
     }
 }

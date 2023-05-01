@@ -70,9 +70,8 @@ class NetworkHandler{
 
             switch (header) {
                 case this.Headers.GAME_STATE:
-                    if (data == "init-round") {
-                        document.dispatchEvent(new CustomEvent("init-round"));
-                    }
+                    document.dispatchEvent(new CustomEvent(data));
+                    this.player.game.game_state = data;
                     break;
 
                 case this.Headers.IS_HOST:
@@ -90,6 +89,11 @@ class NetworkHandler{
             }
         }
 
+    }
+
+    stop(){
+        this.ws.close();
+        console.log("Disconnected from game server");
     }
 }
 

@@ -39,7 +39,7 @@ class GameManger(threading.Thread):
         for current_round in range(self.num_of_players):
             self.current_round = current_round + 1
             print(f"[Game Manager] Starting round {self.current_round}")
-            self.network_handler.send_to_all_clients(Headers.GAME_STATE, "init-round")
+            self.network_handler.send_to_all_clients(Headers.GAME_STATE, "game-started")
             
             self.send_current_roles() # Send each player it's role.
 
