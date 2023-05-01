@@ -64,7 +64,7 @@ class NetworkHandler{
         let pendingRequests = msg.split("END");
         for (let i = 0; i < pendingRequests.length - 1; i++) {
             let request = pendingRequests[i].split("/");
-            console.log(request);
+            // console.log(request);
             let header = parseInt(request[0]);
             let data = JSON.parse(request[1]).value;
 

@@ -46,6 +46,9 @@ class GameManger(threading.Thread):
 
             time.sleep(10)
 
+            self.network_handler.send_to_all_clients(Headers.GAME_STATE, "end-round")
+            print(f"[Game Manager] Round {self.current_round} ended.")
+
 
     def send_current_roles(self) -> None:
         """Send each player it's role for the current round."""
@@ -65,7 +68,7 @@ class GameManger(threading.Thread):
             else:
                 player.send(Headers.PLAYER_ROLE, False)
 
-        print("[Game Manager] Role assignment finished.")
+        print("[Game Manager] Role assignment finished")
 
 
         

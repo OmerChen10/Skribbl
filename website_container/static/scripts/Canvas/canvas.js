@@ -1,51 +1,48 @@
 
 class Canvas {
     constructor(){
-        this.canvas = document.querySelector('canvas');
-        this.ctx = this.canvas.getContext('2d');
-        
-        this.canvas.width = this.canvas.offsetWidth;
-        this.canvas.height = this.canvas.offsetHeight;
-
-        this.canvasPos = this.canvas.getBoundingClientRect();
-        console.log("Canvas initialized.")
+        this.initialize();
     }
 
-    enableDrawing(){
-        console.log('DRAWING ENABLED'); 
-
+    initialize(){
+        this.canvas = document.querySelector('canvas');
+        this.ctx = this.canvas.getContext('2d');
+        this.canvas.width = this.canvas.offsetWidth;
+        this.canvas.height = this.canvas.offsetHeight;
+        this.canvasPos = this.canvas.getBoundingClientRect();
         this.isDrawing = false;
+        this.isEnabled = false;
 
-        const drawing = (e) => {
+        this.drawing = (e) => {
             if (!this.isDrawing) return;
 
             this.ctx.lineTo(e.offsetX, e.offsetY);
             this.ctx.stroke();
         }
 
-        const startDrawing = (e) => {
+        this.startDrawing = (e) => {
             this.ctx.beginPath();
             this.isDrawing = true;
         }
 
-        const stopDrawing = (e) => {
+        this.stopDrawing = (e) => {
             this.ctx.closePath();
             this.isDrawing = false;
         }
 
         // Support for mobile devices
 
-        const touchStartDrawing = (e) => {
+        this.touchStartDrawing = (e) => {
             this.ctx.beginPath();
             this.isDrawing = true;
         }
 
-        const touchStopDrawing = (e) => {
+        this.touchStopDrawing = (e) => {
             this.ctx.closePath();
             this.isDrawing = false;
         }
 
-        const touchDrawing = (e) => {
+        this.touchDrawing = (e) => {
             if (!this.isDrawing) return;
 
             // Calculate the position of the touch relative to the canvas
@@ -56,28 +53,55 @@ class Canvas {
             this.ctx.stroke();
         }
 
+        console.log("Canvas initialized.")
+    }
+
+    update(){
+        this.canvas.width = this.canvas.offsetWidth;
+        this.canvas.height = this.canvas.offsetHeight;
+
+        this.canvasPos = this.canvas.getBoundingClientRect();
+    }
+
+    reset() {
+        this.disableDrawing();
+        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+    }
+
+    enableDrawing(){
+        if (this.isEnabled) return;
+        this.isEnabled = true;
+        console.log('Drawing enabled'); 
+        
+        this.update();
+        this.isDrawing = false;
+
         // Event listeners for mouse events
-        this.canvas.addEventListener("mousedown", startDrawing);
-        this.canvas.addEventListener("mouseup", stopDrawing);
-        this.canvas.addEventListener("mousemove", drawing);
+        this.canvas.addEventListener("mousedown", this.startDrawing);
+        this.canvas.addEventListener("mouseup", this.stopDrawing);
+        this.canvas.addEventListener("mousemove", this.drawing);
 
         // Event listeners for touch events
-        this.canvas.addEventListener("touchstart", touchStartDrawing);
-        this.canvas.addEventListener("touchend", touchStopDrawing);
-        this.canvas.addEventListener("touchmove", touchDrawing);
+        this.canvas.addEventListener("touchstart", this.touchStartDrawing);
+        this.canvas.addEventListener("touchend", this.touchStopDrawing);
+        this.canvas.addEventListener("touchmove", this.touchDrawing);
     }
 
     disableDrawing(){
-        console.log('DRAWING DISABLED'); 
+        if (!this.isEnabled) return;
+        this.isEnabled = false;
+        console.log('Drawing disabled'); 
+        
+        this.update();
 
         // Remove all event listeners
-        this.canvas.removeEventListener("mousedown", startDrawing);
-        this.canvas.removeEventListener("mouseup", stopDrawing);
-        this.canvas.removeEventListener("mousemove", drawing);
+        this.canvas.removeEventListener("mousedown", this.startDrawing);
+        this.canvas.removeEventListener("mouseup", this.stopDrawing);
+        this.canvas.removeEventListener("mousemove", this.drawing);
 
-        this.canvas.removeEventListener("touchstart", touchStartDrawing);
-        this.canvas.removeEventListener("touchend", touchStopDrawing);
-        this.canvas.removeEventListener("touchmove", touchDrawing);
+        this.canvas.removeEventListener("touchstart", this.touchStartDrawing);
+        this.canvas.removeEventListener("touchend", this.touchStopDrawing);
+        this.canvas.removeEventListener("touchmove", this.touchDrawing);
     }
 }
 

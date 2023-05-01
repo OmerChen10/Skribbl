@@ -69,26 +69,20 @@ class GameManger {
 
             let gameContainer = document.querySelector(".game");
             gameContainer.style.display = "flex";
-        });
-    }
 
-    async roundInit(){
-        console.log("Initiating round");
-        await waitForEvent("new-player-role")
-        console.log("Drawer: " + this.player_data.isDrawer)
-        if (this.player_data.isDrawer) {
-            this.canvas.enableDrawing();
-        }
-        else {
-            this.canvas.disableDrawing();
-        }
+            resolve();
+        });
     }
 
     async runRound() {
         return new Promise(async (resolve, reject) => {
             console.log("New round started");
+
+            await waitForEvent("new-player-role")
+
             document.addEventListener("end-round", () => {
-                console.log("Round ended.");
+                console.log("Round ended");
+                this.canvas.reset();
                 resolve();
             });
 
@@ -112,7 +106,6 @@ class GameManger {
 
             while (true) {
                 await waitForEvent("init-round");
-                await this.roundInit();
                 await this.runRound();
             }
         });
