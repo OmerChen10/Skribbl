@@ -2,10 +2,11 @@
 class GameManger {
     constructor() {
         this.networkHandler = new NetworkHandler(this);
+        this.canvas = new Canvas();
         this.player_data = {
             "username": null,
             "isHost": null,
-            "role": null
+            "isDrawer": null
         }
         this.game = {
             "game_state": null
@@ -31,7 +32,6 @@ class GameManger {
             this.player_data.username = username;
             this.networkHandler.sendRaw(username);
             await waitForEvent("is-host");
-
             resolve();
         });
     }
@@ -55,7 +55,6 @@ class GameManger {
             else {
                 guestWaitScreen.style.display = "flex";
             }
-
 
             await waitForEvent("init-round");
             resolve();
@@ -81,6 +80,7 @@ class GameManger {
     async roundInit(){
         console.log("Initiating round");
         await waitForEvent("new-player-role")
-        console.log("New role received: " + this.player_data.role)
+        console.log("New role received: " + this.player_data.isDrawer)
+        
     }
 }

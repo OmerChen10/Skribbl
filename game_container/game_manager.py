@@ -59,10 +59,10 @@ class GameManger(threading.Thread):
 
         for player in self.network_handler.clients:
             if (player is drawer):
-                player.send(Headers.PLAYER_ROLE, "drawer")
+                player.send(Headers.PLAYER_ROLE, True)
 
             else:
-                player.send(Headers.PLAYER_ROLE, "guesser")
+                player.send(Headers.PLAYER_ROLE, False)
 
         print("[Game Manager] Role assignment finished.")
 

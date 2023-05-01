@@ -19,7 +19,7 @@ class NetworkHandler{
             this.ws = new WebSocket('ws://' + ip + ':' + gameCode); // Connect to server
 
             this.ws.onopen = function (event) {
-                console.log('CONNECTED TO GAME SERVER');
+                console.log('Connected to game server');
                 resolve()
             };
 
@@ -76,12 +76,12 @@ class NetworkHandler{
                     break;
 
                 case this.Headers.IS_HOST:
-                    document.dispatchEvent(new CustomEvent("is-host"));
                     this.player.player_data.isHost = data;
+                    document.dispatchEvent(new CustomEvent("is-host"));
                     break;
 
                 case this.Headers.PLAYER_ROLE:
-                    this.player.player_data.role = data;
+                    this.player.player_data.isDrawer = data;
                     document.dispatchEvent(new CustomEvent("new-player-role"));
                     break;
 

@@ -8,6 +8,7 @@ class Canvas {
         this.canvas.height = this.canvas.offsetHeight;
 
         this.canvasPos = this.canvas.getBoundingClientRect();
+        console.log("Canvas initialized.")
     }
 
     enableDrawing(){
