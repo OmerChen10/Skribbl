@@ -13,6 +13,7 @@ class ClientHandler():
         self.received_messages = []
 
         self.ready: threading.Event = threading.Event()
+        self.message_sent: threading.Event = threading.Event()
 
         self.thread = threading.Thread(target=self.initialize_client)
         self.thread.start()
@@ -28,6 +29,7 @@ class ClientHandler():
             for pending_message in self.pending_messages:
                 await self.socket.send(pending_message)
                 self.pending_messages.remove(pending_message)
+                self.message_sent.set()
 
             await asyncio.sleep(0.1)
 
@@ -62,6 +64,9 @@ class ClientHandler():
         msg_data = json.dumps({"value": server_msg})
         msg = f"{header}/{msg_data}END"
         self.pending_messages.append(msg)
+
+        self.message_sent.wait()
+        self.message_sent.clear()
 
     def initialize_client(self) -> None:
         """ Initializes the client. """
