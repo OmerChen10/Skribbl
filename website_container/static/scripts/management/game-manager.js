@@ -30,13 +30,13 @@ class GameManger {
 
             this.player_data.username = username;
             this.networkHandler.sendRaw(username);
-            await this.networkHandler.waitForNewMessage();
+            await waitForEvent("is-host");
 
             resolve();
         });
     }
     moveToWaitScreen() {
-        console.log("MOVING TO WAIT SCREEN");
+        console.log("Moving to wait screen");
         return new Promise(async (resolve, reject) => {
             let usernameContainer = document.querySelector(".username");
             let hostWaitScreen = document.getElementById("host-wait-screen");
@@ -63,7 +63,7 @@ class GameManger {
     }
     moveToGameScreen() {
         return new Promise((resolve, reject) => {
-            console.log("MOVING TO GAME SCREEN");
+            console.log("Moving to game screen");
 
             let gameContainer = document.querySelector(".game");
 
@@ -79,8 +79,8 @@ class GameManger {
     }
 
     async roundInit(){
-        console.log("INITIATING ROUND");
+        console.log("Initiating round");
         await waitForEvent("new-player-role")
-        console.log("NEW ROLE RECEIVED: " + this.player_data.role)
+        console.log("New role received: " + this.player_data.role)
     }
 }

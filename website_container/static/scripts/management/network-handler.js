@@ -76,6 +76,7 @@ class NetworkHandler{
                     break;
 
                 case this.Headers.IS_HOST:
+                    document.dispatchEvent(new CustomEvent("is-host"));
                     this.player.player_data.isHost = data;
                     break;
 
