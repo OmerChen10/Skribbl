@@ -44,7 +44,7 @@ class GameManger(threading.Thread):
             
             self.send_current_roles() # Send each player it's role.
 
-            time.sleep(10)
+            time.sleep(3)
 
             self.network_handler.send_to_all_clients(Headers.GAME_STATE, "end-round")
             print(f"[Game Manager] Round {self.current_round} ended.")

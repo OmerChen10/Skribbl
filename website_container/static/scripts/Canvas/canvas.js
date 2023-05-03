@@ -68,6 +68,17 @@ class Canvas {
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
     }
 
+    getImage(){
+        let img = new Image();
+        img.src = this.canvas.toDataURL();
+        return img;
+    }
+
+    setImage(img){
+        // Draw a png image on the canvas
+        this.ctx.drawImage(img, 0, 0);
+    }
+
     enableDrawing(){
         if (this.isEnabled) return;
         this.isEnabled = true;
