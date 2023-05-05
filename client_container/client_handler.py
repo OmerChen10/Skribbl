@@ -15,6 +15,9 @@ class ClientHandler():
         self.ready: threading.Event = threading.Event()
         self.message_sent: threading.Event = threading.Event()
 
+        self.canvas_image = None
+        self.canvas_update: threading.Event = threading.Event()
+
         self.thread = threading.Thread(target=self.initialize_client)
         self.thread.start()
 
@@ -62,7 +65,7 @@ class ClientHandler():
 
     def send(self, header: int, server_msg):
         msg_data = json.dumps({"value": server_msg})
-        msg = f"{header}/{msg_data}END"
+        msg = f"{header}==={msg_data}END"
         self.pending_messages.append(msg)
 
         self.message_sent.wait()
@@ -81,20 +84,39 @@ class ClientHandler():
         """ Handles the client's requests. """
 
         handlers = {
-            str(Headers.GAME_STATE): self.handle_game_state
+            str(Headers.GAME_STATE): self.handle_game_state,
+            str(Headers.CANVAS_UPDATE): self.handle_canvas_update
         }
 
         while True:
             # Remove the last element, which is an empty string
             requests = self.receive().split("END")[:-1]
             for request in requests:
-                header = request.split("/")[0]
-                data = request.split("/")[1]
+                try:
+                    request = request.split("===")
+                    header = request[0]
+                    data = request[1]
 
-                handlers[header](data)
+                    handlers[header](data)
+                
+                except Exception as e:
+                    print(f"[Client Handler] Error: {e} for request {request}.")
 
     def handle_game_state(self, data: str) -> None:
         """ Handles the client's game state request. """
   
         if (data == "host-ready"):
             self.ready.set()
+
+    def handle_canvas_update(self, data) -> None:
+        """ Handles the client's canvas update request. """
+
+        self.canvas_image = data
+        self.canvas_update.set()
+
+    def get_canvas_update(self) -> str:
+        """ Returns the canvas update. """
+
+        self.canvas_update.clear()
+
+        return self.canvas_image

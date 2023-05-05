@@ -8,7 +8,8 @@ class NetworkHandler{
         this.Headers = {
             GAME_STATE: 1,
             IS_HOST: 2,
-            PLAYER_ROLE: 3
+            PLAYER_ROLE: 3,
+            CANVAS_UPDATE: 4
         }
     }
 
@@ -41,7 +42,7 @@ class NetworkHandler{
 
     send(header, data){
         if(this.getSocketState()){
-            this.ws.send(header + "/" + data + "END");
+            this.ws.send(header + "===" + data + "END");
         }
     }
 
@@ -63,7 +64,7 @@ class NetworkHandler{
 
         let pendingRequests = msg.split("END");
         for (let i = 0; i < pendingRequests.length - 1; i++) {
-            let request = pendingRequests[i].split("/");
+            let request = pendingRequests[i].split("===");
             // console.log(request);
             let header = parseInt(request[0]);
             let data = JSON.parse(request[1]).value;
@@ -83,6 +84,10 @@ class NetworkHandler{
                     this.player.player_data.isDrawer = data;
                     document.dispatchEvent(new CustomEvent("new-player-role"));
                     break;
+
+                case this.Headers.CANVAS_UPDATE:
+                    this.player.canvas.setImageData(data);
+                    console.log(data);
 
                 default:
                     break;

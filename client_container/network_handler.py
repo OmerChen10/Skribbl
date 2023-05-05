@@ -10,7 +10,7 @@ class NetworkHandler(threading.Thread):
         self.game_code: str = game_code
         self.clients: list[ClientHandler] = []
         self.num_clients: int = 0
-        self.host = None
+        self.host: ClientHandler = None
 
     def run(self):
         print("[Client Handler] Starting network handler")
@@ -44,6 +44,11 @@ class NetworkHandler(threading.Thread):
     def send_to_all_clients(self, header: int, server_msg) -> None:
         for client in self.clients:
             client.send(header, server_msg)
+
+    def send_to_guessers(self, drawer: ClientHandler, header: int, server_msg) -> None:
+        for client in self.clients:
+            if (client is not drawer):
+                client.send(header, server_msg)
 
 
 

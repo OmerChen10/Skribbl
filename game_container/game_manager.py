@@ -44,7 +44,9 @@ class GameManger(threading.Thread):
             
             self.send_current_roles() # Send each player it's role.
 
-            time.sleep(3)
+            # self.round_loop()
+
+            time.sleep(10)
 
             self.network_handler.send_to_all_clients(Headers.GAME_STATE, "end-round")
             print(f"[Game Manager] Round {self.current_round} ended.")
@@ -54,15 +56,15 @@ class GameManger(threading.Thread):
         """Send each player it's role for the current round."""
 
         if (self.num_of_players == 1):
-            drawer = self.network_handler.clients[0] # If there is only one player, he is the drawer.
+            self.drawer = self.network_handler.clients[0] # If there is only one player, he is the drawer.
 
         else:
-            drawer = self.remaining_drawers[random.randint(0, len(self.remaining_drawers) - 1)]
+            self.drawer = self.remaining_drawers[random.randint(0, len(self.remaining_drawers) - 1)]
         
-        self.remaining_drawers.remove(drawer)
+        self.remaining_drawers.remove(self.drawer)
 
         for player in self.network_handler.clients:
-            if (player is drawer):
+            if (player is self.drawer):
                 player.send(Headers.PLAYER_ROLE, True)
 
             else:
@@ -70,7 +72,16 @@ class GameManger(threading.Thread):
 
         print("[Game Manager] Role assignment finished")
 
+    def round_loop(self) -> None:
+        while (True):
+            if (self.network_handler.host.canvas_update.is_set()):
 
+                self.network_handler.host.canvas_update.clear()
+                self.network_handler.send_to_guessers(
+                    self.drawer,
+                    Headers.CANVAS_UPDATE,
+                    self.drawer.get_canvas_update()
+                )
         
         
 

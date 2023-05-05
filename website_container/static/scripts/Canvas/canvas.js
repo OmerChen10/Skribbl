@@ -18,6 +18,8 @@ class Canvas {
 
             this.ctx.lineTo(e.offsetX, e.offsetY);
             this.ctx.stroke();
+
+            document.dispatchEvent(new Event('canvas-update'));
         }
 
         this.startDrawing = (e) => {
@@ -74,8 +76,10 @@ class Canvas {
         return img;
     }
 
-    setImage(img){
+    setImageData(imgData){
         // Draw a png image on the canvas
+        let img = new Image();
+        img.src = imgData;
         this.ctx.drawImage(img, 0, 0);
     }
 

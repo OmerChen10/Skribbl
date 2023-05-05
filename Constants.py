@@ -14,3 +14,4 @@ class Headers():
     GAME_STATE = 1
     IS_HOST = 2
     PLAYER_ROLE = 3
+    CANVAS_UPDATE = 4

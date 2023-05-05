@@ -14,7 +14,9 @@ class GameManger {
 
         this.Headers = {
             GAME_STATE: 1,
-            IS_HOST: 2
+            IS_HOST: 2,
+            PLAYER_ROLE: 3,
+            CANVAS_UPDATE: 4
         }
     }
 
@@ -87,10 +89,10 @@ class GameManger {
             });
 
             if (this.player_data.isDrawer) {
-                await this.canvas.enableDrawing();
+                this.startDrawerLoop();
             }
-            else {
-                await this.canvas.disableDrawing();
+            else{
+                this.startGuesserLoop();
             }
         });
     }
@@ -109,5 +111,16 @@ class GameManger {
                 await this.runRound();
             }
         });
+    }
+
+    startDrawerLoop() {
+        this.canvas.enableDrawing();
+        document.addEventListener("canvas-update", (e) => {
+            this.networkHandler.send(this.Headers.CANVAS_UPDATE, this.canvas.getImage().src);
+        });
+    }
+
+    startGuesserLoop() {
+        this.canvas.disableDrawing();
     }
 }
