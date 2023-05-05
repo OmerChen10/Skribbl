@@ -85,7 +85,8 @@ class ClientHandler():
 
         handlers = {
             str(Headers.GAME_STATE): self.handle_game_state,
-            str(Headers.CANVAS_UPDATE): self.handle_canvas_update
+            str(Headers.CANVAS_UPDATE): self.handle_canvas_update,
+            str(Headers.DEBUG): lambda data: print(f"[Client Handler] Debug: {data}")
         }
 
         while True:
@@ -100,7 +101,7 @@ class ClientHandler():
                     handlers[header](data)
                 
                 except Exception as e:
-                    print(f"[Client Handler] Error: {e} for request {request}.")
+                    print(f"[Client Handler] Error handling a request.")
 
     def handle_game_state(self, data: str) -> None:
         """ Handles the client's game state request. """

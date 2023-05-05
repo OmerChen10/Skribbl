@@ -16,7 +16,8 @@ class GameManger {
             GAME_STATE: 1,
             IS_HOST: 2,
             PLAYER_ROLE: 3,
-            CANVAS_UPDATE: 4
+            CANVAS_UPDATE: 4,
+            DEBUG: 5
         }
     }
 
@@ -115,8 +116,17 @@ class GameManger {
 
     startDrawerLoop() {
         this.canvas.enableDrawing();
+        let duringCooldown = false;
+
         document.addEventListener("canvas-update", (e) => {
-            this.networkHandler.send(this.Headers.CANVAS_UPDATE, this.canvas.getImage().src);
+            if (!duringCooldown) {
+                duringCooldown = true;
+                setTimeout(() => {
+                    console.log("Sending canvas update");
+                    this.networkHandler.send(this.Headers.CANVAS_UPDATE, this.canvas.getImage().src);
+                    duringCooldown = false;
+                }, 100);
+            }
         });
     }
 

@@ -77,10 +77,13 @@ class Canvas {
     }
 
     setImageData(imgData){
-        // Draw a png image on the canvas
+        this.update();
+        
         let img = new Image();
         img.src = imgData;
-        this.ctx.drawImage(img, 0, 0);
+        img.onload = () => {
+            this.ctx.drawImage(img, 0, 0);
+        }
     }
 
     enableDrawing(){

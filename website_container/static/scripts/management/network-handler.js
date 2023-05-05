@@ -9,7 +9,8 @@ class NetworkHandler{
             GAME_STATE: 1,
             IS_HOST: 2,
             PLAYER_ROLE: 3,
-            CANVAS_UPDATE: 4
+            CANVAS_UPDATE: 4,
+            DEBUG: 5
         }
     }
 
@@ -86,9 +87,9 @@ class NetworkHandler{
                     break;
 
                 case this.Headers.CANVAS_UPDATE:
+                    console.log("Received canvas update");
                     this.player.canvas.setImageData(data);
-                    console.log(data);
-
+                    break;
                 default:
                     break;
             }

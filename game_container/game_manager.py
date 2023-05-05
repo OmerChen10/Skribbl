@@ -42,17 +42,17 @@ class GameManger(threading.Thread):
             print(f"[Game Manager] Starting round {self.current_round}")
             self.network_handler.send_to_all_clients(Headers.GAME_STATE, "init-round")
             
-            self.send_current_roles() # Send each player it's role.
+            self.send_new_roles() # Send each player it's role.
 
-            # self.round_loop()
+            self.round_loop()
 
-            time.sleep(10)
+            time.sleep(3)
 
             self.network_handler.send_to_all_clients(Headers.GAME_STATE, "end-round")
             print(f"[Game Manager] Round {self.current_round} ended.")
 
 
-    def send_current_roles(self) -> None:
+    def send_new_roles(self) -> None:
         """Send each player it's role for the current round."""
 
         if (self.num_of_players == 1):
@@ -60,7 +60,8 @@ class GameManger(threading.Thread):
 
         else:
             self.drawer = self.remaining_drawers[random.randint(0, len(self.remaining_drawers) - 1)]
-        
+
+
         self.remaining_drawers.remove(self.drawer)
 
         for player in self.network_handler.clients:
@@ -74,9 +75,8 @@ class GameManger(threading.Thread):
 
     def round_loop(self) -> None:
         while (True):
-            if (self.network_handler.host.canvas_update.is_set()):
+            if (self.drawer.canvas_update.is_set()):
 
-                self.network_handler.host.canvas_update.clear()
                 self.network_handler.send_to_guessers(
                     self.drawer,
                     Headers.CANVAS_UPDATE,

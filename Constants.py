@@ -15,3 +15,4 @@ class Headers():
     IS_HOST = 2
     PLAYER_ROLE = 3
     CANVAS_UPDATE = 4
+    DEBUG = 5
