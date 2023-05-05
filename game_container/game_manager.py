@@ -71,7 +71,7 @@ class GameManger(threading.Thread):
             else:
                 player.send(Headers.PLAYER_ROLE, False)
 
-        print("[Game Manager] Role assignment finished")
+        print("[Game Manager] Current drawer: " + str(self.drawer.name))
 
     def round_loop(self) -> None:
         while (True):
