@@ -123,7 +123,7 @@ class GameManger {
                 duringCooldown = true;
                 setTimeout(() => {
                     console.log("Sending canvas update");
-                    this.networkHandler.send(this.Headers.CANVAS_UPDATE, this.canvas.getImage().src);
+                    this.networkHandler.sendJson(this.Headers.CANVAS_UPDATE, this.canvas.getMousePoses());
                     duringCooldown = false;
                 }, 100);
             }
@@ -132,5 +132,6 @@ class GameManger {
 
     startGuesserLoop() {
         this.canvas.disableDrawing();
+        this.canvas.update();
     }
 }

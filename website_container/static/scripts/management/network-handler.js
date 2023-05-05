@@ -47,6 +47,12 @@ class NetworkHandler{
         }
     }
 
+    sendJson(header, data){
+        if(this.getSocketState()){
+            this.ws.send(header + "===" + JSON.stringify(data) + "END");
+        }
+    }
+
     sendRaw(data){
         if(this.getSocketState()){
             this.ws.send(data);
@@ -88,7 +94,7 @@ class NetworkHandler{
 
                 case this.Headers.CANVAS_UPDATE:
                     console.log("Received canvas update");
-                    this.player.canvas.setImageData(data);
+                    this.player.canvas.drawMousePoses(JSON.parse(data));
                     break;
                 default:
                     break;

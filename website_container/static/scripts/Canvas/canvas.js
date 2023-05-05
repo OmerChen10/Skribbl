@@ -12,10 +12,12 @@ class Canvas {
         this.canvasPos = this.canvas.getBoundingClientRect();
         this.isDrawing = false;
         this.isEnabled = false;
+        this.mouse_poses = [];
 
         this.drawing = (e) => {
             if (!this.isDrawing) return;
 
+            this.mouse_poses.push([e.offsetX, e.offsetY]);
             this.ctx.lineTo(e.offsetX, e.offsetY);
             this.ctx.stroke();
 
@@ -47,12 +49,15 @@ class Canvas {
         this.touchDrawing = (e) => {
             if (!this.isDrawing) return;
 
+            this.update();
             // Calculate the position of the touch relative to the canvas
             offsetX = e.touches[0].clientX - this.canvasPos.left;
             offsetY = e.touches[0].clientY - this.canvasPos.top;
 
             this.ctx.lineTo(offsetX, offsetY);
             this.ctx.stroke();
+
+            document.dispatchEvent(new Event('canvas-update'));
         }
 
         console.log("Canvas initialized.")
@@ -76,14 +81,21 @@ class Canvas {
         return img;
     }
 
-    setImageData(imgData){
-        this.update();
-        
-        let img = new Image();
-        img.src = imgData;
-        img.onload = () => {
-            this.ctx.drawImage(img, 0, 0);
+    getMousePoses(){
+        let mousePoses = this.mouse_poses;
+        this.mouse_poses = [];
+        return mousePoses;
+    }
+
+    drawMousePoses(mousePoses){
+        this.ctx.beginPath();
+
+        for (let i = 0; i < mousePoses.length; i++) {
+            this.ctx.lineTo(mousePoses[i][0], mousePoses[i][1]);
+            this.ctx.stroke();
         }
+
+        this.ctx.closePath();
     }
 
     enableDrawing(){
