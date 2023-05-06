@@ -25,7 +25,8 @@ class Canvas {
         this.drawing = (e) => {
             if (!this.isDrawing) return;
             
-            this.mousePoses.push([e.offsetX, e.offsetY]);
+            // Send the mouse position relative to the canvas's size
+            this.mousePoses.push([e.offsetX / this.canvas.width, e.offsetY / this.canvas.height]);
             this.ctx.lineTo(e.offsetX, e.offsetY);
             this.ctx.stroke();
 

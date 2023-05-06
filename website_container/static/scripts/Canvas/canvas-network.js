@@ -42,6 +42,8 @@ class CanvasNet {
 
     handleUpdate(canvasUpdate) {
         canvasUpdate = JSON.parse(canvasUpdate);
+        let poseX, poseY;
+
         switch (canvasUpdate.header) {
             case this.headers.START_DRAWING:
                 this.canvas.ctx.beginPath();
@@ -49,6 +51,7 @@ class CanvasNet {
 
             case this.headers.STOP_DRAWING:
                 this.canvas.ctx.closePath();
+                this.lasPos = null;
                 break;
 
             case this.headers.DRAWING:
@@ -58,10 +61,12 @@ class CanvasNet {
                 } 
 
                 for (let i = 0; i < canvasUpdate.data.length; i++) { // Draw the new mouse positions
-                    this.lasPos = canvasUpdate.data;
-                    this.canvas.ctx.lineTo(canvasUpdate.data[i][0], canvasUpdate.data[i][1]);
+                    poseX = canvasUpdate.data[i][0] * this.canvas.canvas.width; // Convert the mouse position to the canvas's size
+                    poseY = canvasUpdate.data[i][1] * this.canvas.canvas.height; // Convert the mouse position to the canvas's size
+                    this.canvas.ctx.lineTo(poseX, poseY);
                 }
                 
+                this.lasPos = [poseX, poseY];
                 this.canvas.ctx.stroke();
         }
     }
