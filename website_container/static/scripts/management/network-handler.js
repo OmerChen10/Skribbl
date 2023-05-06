@@ -94,7 +94,7 @@ class NetworkHandler{
 
                 case this.Headers.CANVAS_UPDATE:
                     console.log("Received canvas update");
-                    this.player.canvas.drawMousePoses(JSON.parse(data));
+                    this.player.canvas.handleUpdate(data);
                     break;
                 default:
                     break;

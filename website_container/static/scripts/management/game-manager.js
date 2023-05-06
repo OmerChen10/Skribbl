@@ -2,7 +2,7 @@
 class GameManger {
     constructor() {
         this.networkHandler = new NetworkHandler(this);
-        this.canvas = new Canvas();
+        this.canvas = new Canvas(this.networkHandler);
         this.player_data = {
             "username": null,
             "isHost": null,
@@ -117,21 +117,10 @@ class GameManger {
     startDrawerLoop() {
         this.canvas.enableDrawing();
         let duringCooldown = false;
-
-        document.addEventListener("canvas-update", (e) => {
-            if (!duringCooldown) {
-                duringCooldown = true;
-                setTimeout(() => {
-                    console.log("Sending canvas update");
-                    this.networkHandler.sendJson(this.Headers.CANVAS_UPDATE, this.canvas.getMousePoses());
-                    duringCooldown = false;
-                }, 100);
-            }
-        });
     }
 
     startGuesserLoop() {
         this.canvas.disableDrawing();
-        this.canvas.update();
+        this.canvas.reinitialize();
     }
 }
