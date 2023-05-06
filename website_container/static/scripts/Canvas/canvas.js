@@ -4,11 +4,6 @@ class Canvas {
         this.initialize();
         this.networkHandler = networkHandler;
         this.canvasNet = new CanvasNet(this, networkHandler);
-        this.headers = {
-            START_DRAWING: 1,
-            STOP_DRAWING: 2,
-            DRAWING: 3
-        }
     }
 
     initialize() {
@@ -20,8 +15,9 @@ class Canvas {
         this.isDrawing = false;
         this.isEnabled = false;
         this.mousePoses = [];
-        this.lasPos = null;
 
+        this.ctx.lineWidth = 2;
+        
         this.drawing = (e) => {
             if (!this.isDrawing) return;
             

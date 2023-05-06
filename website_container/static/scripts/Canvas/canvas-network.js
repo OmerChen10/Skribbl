@@ -9,19 +9,19 @@ class CanvasNet {
             DRAWING: 3
         }
         this.duringCooldown = false;
+        this.sendingInterval = 150; // ms
     }
 
     sendNewUpdate() {
         if (!this.duringCooldown) {
             this.duringCooldown = true;
             setTimeout(() => {
-                console.log("Sending canvas update");
                 this.networkHandler.sendJson(this.networkHandler.Headers.CANVAS_UPDATE, 
                     {"header": this.headers.DRAWING, 
                      "data": this.canvas.getMousePoses()});
 
                 this.duringCooldown = false;
-            }, 100);
+            }, this.sendingInterval);
         }
     }
 
