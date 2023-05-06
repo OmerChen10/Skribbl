@@ -9,7 +9,7 @@ class CanvasNet {
             DRAWING: 3
         }
         this.duringCooldown = false;
-        this.sendingInterval = 150; // ms
+        this.sendingInterval = 100; // ms
     }
 
     sendNewUpdate() {
@@ -29,6 +29,7 @@ class CanvasNet {
         this.networkHandler.sendJson(this.networkHandler.Headers.CANVAS_UPDATE, 
             {"header": this.headers.START_DRAWING, 
              "data": null});
+            
     }
 
     stopDrawing() {
