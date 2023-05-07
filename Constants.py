@@ -3,6 +3,7 @@
 class GameConfig():
 
     code_length = 4
+    round_time = 10 # Seconds
 
 
 class NetworkConfig():

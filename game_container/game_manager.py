@@ -1,7 +1,8 @@
 import threading, random, time
 from client_container.network_handler import NetworkHandler
 from client_container.client_handler import ClientHandler
-from Constants import Headers
+from game_container.utils import Timer
+from Constants import *
 
 
 class GameManger(threading.Thread):
@@ -12,6 +13,7 @@ class GameManger(threading.Thread):
         self.num_of_players = 0
         self.remaining_drawers = None
         self.current_round = 0
+        self.timer = Timer()
 
     def run(self):
         print("[Game Manager] Starting game manager")
@@ -43,10 +45,7 @@ class GameManger(threading.Thread):
             self.network_handler.send_to_all_clients(Headers.GAME_STATE, "init-round")
             
             self.send_new_roles() # Send each player it's role.
-
             self.round_loop()
-
-            time.sleep(3)
 
             self.network_handler.send_to_all_clients(Headers.GAME_STATE, "end-round")
             print(f"[Game Manager] Round {self.current_round} ended.")
@@ -74,7 +73,10 @@ class GameManger(threading.Thread):
         print("[Game Manager] Current drawer: " + str(self.drawer.name))
 
     def round_loop(self) -> None:
-        while (True):
+        """The main loop of the round."""
+
+        self.timer.start(GameConfig.round_time)
+        while (not self.timer.done.is_set()):
             if (self.drawer.canvas_update.is_set()):
 
                 self.network_handler.send_to_guessers(
