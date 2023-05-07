@@ -103,8 +103,7 @@ class NetworkHandler{
     }
 
     stop(){
-        this.ws.close();
-        console.log("Disconnected from game server");
+        this.ws.close();;
     }
 }
 

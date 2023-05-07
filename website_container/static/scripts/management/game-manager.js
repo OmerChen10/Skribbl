@@ -77,6 +77,23 @@ class GameManger {
         });
     }
 
+    async startGameLoop() {
+        return new Promise(async (resolve, reject) => {
+            console.log("Starting game loop");
+            await this.moveToGameScreen();
+            document.addEventListener("game-ended", () => {
+                this.networkHandler.stop();
+                console.log("Game ended");
+                resolve();
+            });
+
+            while (true) {
+                await waitForEvent("init-round");
+                await this.runRound();
+            }
+        });
+    }
+
     async runRound() {
         return new Promise(async (resolve, reject) => {
             console.log("New round started");
@@ -94,22 +111,6 @@ class GameManger {
             }
             else{
                 this.startGuesserLoop();
-            }
-        });
-    }
-
-    async startGameLoop() {
-        return new Promise(async (resolve, reject) => {
-            console.log("Starting game loop");
-            await this.moveToGameScreen();
-            document.addEventListener("end-game", () => {
-                this.networkHandler.stop();
-                resolve();
-            });
-
-            while (true) {
-                await waitForEvent("init-round");
-                await this.runRound();
             }
         });
     }
