@@ -3,7 +3,7 @@ class CanvasNet {
     constructor(canvas, networkHandler) {
         this.canvas = canvas;
         this.networkHandler = networkHandler;
-        this.headers = {
+        this.actions = {
             START_DRAWING: 1,
             STOP_DRAWING: 2,
             DRAWING: 3
@@ -17,7 +17,7 @@ class CanvasNet {
             this.duringCooldown = true;
             setTimeout(() => {
                 this.networkHandler.sendJson(this.networkHandler.Headers.CANVAS_UPDATE, 
-                    {"header": this.headers.DRAWING, 
+                    {"header": this.actions.DRAWING, 
                      "data": this.canvas.getMousePoses()});
 
                 this.duringCooldown = false;
@@ -27,7 +27,7 @@ class CanvasNet {
 
     startDrawing() {
         this.networkHandler.sendJson(this.networkHandler.Headers.CANVAS_UPDATE, 
-            {"header": this.headers.START_DRAWING, 
+            {"header": this.actions.START_DRAWING, 
              "data": null});
             
     }
@@ -36,7 +36,7 @@ class CanvasNet {
         // delay the stop drawing to prevent the packet from arriving before the drawing packet
         setTimeout(() => {
             this.networkHandler.sendJson(this.networkHandler.Headers.CANVAS_UPDATE, 
-                {"header": this.headers.STOP_DRAWING, 
+                {"header": this.actions.STOP_DRAWING, 
                 "data": null});
             }, 100);
     }
@@ -46,16 +46,16 @@ class CanvasNet {
         let poseX, poseY;
 
         switch (canvasUpdate.header) {
-            case this.headers.START_DRAWING:
+            case this.actions.START_DRAWING:
                 this.canvas.ctx.beginPath();
                 break;
 
-            case this.headers.STOP_DRAWING:
+            case this.actions.STOP_DRAWING:
                 this.canvas.ctx.closePath();
                 this.lasPos = null;
                 break;
 
-            case this.headers.DRAWING:
+            case this.actions.DRAWING:
                 if (this.lasPos != null) { // Prevent the holes that are created between the chunks of data.
                     this.canvas.ctx.lineTo(this.lasPos[0], this.lasPos[1]);
                     this.canvas.ctx.stroke();
