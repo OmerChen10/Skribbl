@@ -1,10 +1,9 @@
-import threading
-import random
-import time
+import threading, random, time
 from client_container.network_handler import NetworkHandler
 from client_container.client_handler import ClientHandler
 from game_container.utils import Timer
 from Constants import *
+from colorama import Fore, Style
 
 
 class GameManger(threading.Thread):
@@ -16,6 +15,7 @@ class GameManger(threading.Thread):
         self.remaining_drawers = None
         self.current_round = 0
         self.timer = Timer()
+
 
     def run(self):
         print("[Game Manager] Starting game manager")
@@ -50,10 +50,11 @@ class GameManger(threading.Thread):
                 Headers.GAME_STATE, "init-round")
 
             self.send_new_roles()  # Send each player it's role.
-            self.round_loop()
+            self.round_loop() # Start the round loop.
 
             self.network_handler.send_to_all_clients(
                 Headers.GAME_STATE, "end-round")
+            
             print(f"[Game Manager] Round {self.current_round} ended.")
 
     def send_new_roles(self) -> None:
@@ -81,12 +82,12 @@ class GameManger(threading.Thread):
     def round_loop(self) -> None:
         """The main loop of the round."""
 
-        self.timer.start(GameConfig.round_time)
+        self.timer.start(GameConfig.round_duration)
         while (not self.timer.done.is_set()):
             if (self.drawer.canvas_update.is_set()):
 
                 self.network_handler.send_to_guessers(
-                    self.drawer,
+                    self.drawer, # Passing the drawer too so he won't get the update.
                     Headers.CANVAS_UPDATE,
                     self.drawer.get_canvas_update()
                 )
@@ -94,5 +95,13 @@ class GameManger(threading.Thread):
     def finish_game(self) -> None:
         """End the game."""
 
+        print(Fore.RED + Style.BRIGHT + 
+              "[Game Manager] Game ended." + 
+              Style.RESET_ALL)
+        
         self.network_handler.send_to_all_clients(
             Headers.GAME_STATE, "game-ended")
+        
+        self.network_handler.stop()
+
+        

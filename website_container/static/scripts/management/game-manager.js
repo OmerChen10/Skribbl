@@ -82,7 +82,6 @@ class GameManger {
             console.log("Starting game loop");
             await this.moveToGameScreen();
             document.addEventListener("game-ended", () => {
-                this.networkHandler.stop();
                 console.log("Game ended");
                 resolve();
             });

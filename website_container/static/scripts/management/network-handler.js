@@ -101,9 +101,5 @@ class NetworkHandler{
         }
 
     }
-
-    stop(){
-        this.ws.close();;
-    }
 }
 

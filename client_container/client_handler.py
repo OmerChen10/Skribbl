@@ -121,3 +121,8 @@ class ClientHandler():
         self.canvas_update.clear()
 
         return self.canvas_image
+    
+    async def close(self) -> None:
+        """ Closes the client. """
+
+        await self.socket.close()

@@ -12,16 +12,14 @@ class Skribbl():
         self.network_manager = NetworkHandler(self.game_code)
         self.game_manager = GameManger(self.network_manager)
 
-
     def start(self):
-        print(Fore.BLUE + Style.BRIGHT + 
+        print(Fore.BLUE + Style.BRIGHT +
               f"[Skribbl] Starting game with code: {self.game_code}"
               + Style.RESET_ALL)
-        
+
         self.website.start()
         self.network_manager.start()
         self.game_manager.start()
-
 
     def _randomize_game_code(self) -> str:
         code = ""
@@ -30,4 +28,3 @@ class Skribbl():
 
         # return code
         return "1111"
-
