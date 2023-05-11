@@ -1,6 +1,7 @@
-import websockets, asyncio, threading, Constants, json
+import websockets, asyncio, threading, json
 from client_container.client_handler import ClientHandler
-from Constants import Headers
+from colorama import Fore, Style
+from Constants import *
 
 
 class NetworkHandler(threading.Thread):
@@ -11,6 +12,8 @@ class NetworkHandler(threading.Thread):
         self.clients: list[ClientHandler] = []
         self.num_clients: int = 0
         self.host: ClientHandler = None
+
+        self.current_drawer: ClientHandler = None
 
     def run(self):
         print("[Client Handler] Starting network handler")
@@ -24,7 +27,7 @@ class NetworkHandler(threading.Thread):
         await websockets.serve(self.handle_connection, "0.0.0.0", self.game_code)
 
     async def handle_connection(self, websocket):
-        if (Constants.NetworkConfig.reconnection_enabled):
+        if (NetworkConfig.reconnection_enabled):
             for client in self.clients:
                 if (client.socket.remote_address[0] == websocket.remote_address[0]):
                     print(f"[Network Handler] Client {client.id} reconnected.")
@@ -45,10 +48,30 @@ class NetworkHandler(threading.Thread):
         for client in self.clients:
             client.send(header, server_msg)
 
-    def send_to_guessers(self, drawer: ClientHandler, header: int, server_msg) -> None:
+    def set_drawer(self, drawer: ClientHandler):
+        self.current_drawer = drawer
+
+    def send_to_guessers(self, header: int, server_msg) -> None:
         for client in self.clients:
-            if (client is not drawer):
+            if (client is not self.current_drawer):
                 client.send(header, server_msg)
+
+    async def close_all_connections(self):
+        for client in self.clients:
+            await client.close()
+
+    def stop(self):
+        # Close all client connections
+        self.loop.create_task(self.close_all_connections())
+        self.loop.stop()
+
+        print(Fore.RED + Style.BRIGHT +
+              "[Network Handler] Network handler stopped." + 
+              Style.RESET_ALL)
+        
+        super().join()
+
+    
 
 
 

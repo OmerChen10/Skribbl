@@ -85,8 +85,7 @@ class ClientHandler():
 
         handlers = {
             str(Headers.GAME_STATE): self.handle_game_state,
-            str(Headers.CANVAS_UPDATE): self.handle_canvas_update,
-            str(Headers.DEBUG): lambda data: print(f"[Client Handler] Debug: {data}")
+            str(Headers.CANVAS_UPDATE): self.handle_canvas_update
         }
 
         while True:
@@ -121,3 +120,8 @@ class ClientHandler():
         self.canvas_update.clear()
 
         return self.canvas_image
+    
+    async def close(self) -> None:
+        """ Closes the client. """
+
+        await self.socket.close()

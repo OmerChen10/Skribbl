@@ -17,7 +17,7 @@ class GameManger {
             IS_HOST: 2,
             PLAYER_ROLE: 3,
             CANVAS_UPDATE: 4,
-            DEBUG: 5
+            WORD_UPDATE: 5
         }
     }
 
@@ -77,11 +77,31 @@ class GameManger {
         });
     }
 
+    async startGameLoop() {
+        return new Promise(async (resolve, reject) => {
+            console.log("Starting game loop");
+
+            await this.moveToGameScreen();
+
+            document.addEventListener("game-ended", () => {
+                console.log("Game ended");
+                resolve();
+            });
+
+            while (true) {
+                await waitForEvent("init-round");
+                await this.runRound();
+            }
+        });
+    }
+
     async runRound() {
         return new Promise(async (resolve, reject) => {
             console.log("New round started");
-
+            
+            console.log("[Game Manager] Waiting for new player role and word")
             await waitForEvent("new-player-role")
+            await waitForEvent("new-word");
 
             document.addEventListener("end-round", () => {
                 console.log("Round ended");
@@ -94,22 +114,6 @@ class GameManger {
             }
             else{
                 this.startGuesserLoop();
-            }
-        });
-    }
-
-    async startGameLoop() {
-        return new Promise(async (resolve, reject) => {
-            console.log("Starting game loop");
-            await this.moveToGameScreen();
-            document.addEventListener("end-game", () => {
-                this.networkHandler.stop();
-                resolve();
-            });
-
-            while (true) {
-                await waitForEvent("init-round");
-                await this.runRound();
             }
         });
     }
