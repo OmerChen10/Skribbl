@@ -10,7 +10,7 @@ class NetworkHandler{
             IS_HOST: 2,
             PLAYER_ROLE: 3,
             CANVAS_UPDATE: 4,
-            DEBUG: 5
+            WORD_UPDATE: 5
         }
     }
 
@@ -95,6 +95,12 @@ class NetworkHandler{
                 case this.Headers.CANVAS_UPDATE:
                     this.player.canvas.handleUpdate(data);
                     break;
+
+                case this.Headers.WORD_UPDATE:
+                    document.dispatchEvent(new CustomEvent("new-word"));
+                    let wordText = document.getElementById("word-text");
+                    wordText.textContent = data; 
+
                 default:
                     break;
             }

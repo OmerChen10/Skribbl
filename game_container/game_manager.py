@@ -1,7 +1,9 @@
-import threading, random, time
+import threading
+import random
+import time
 from client_container.network_handler import NetworkHandler
 from client_container.client_handler import ClientHandler
-from game_container.utils import Timer
+from game_container.utils import Timer, WordSelector
 from Constants import *
 from colorama import Fore, Style
 
@@ -15,7 +17,8 @@ class GameManger(threading.Thread):
         self.remaining_drawers = None
         self.current_round = 0
         self.timer = Timer()
-
+        self.word_selector = WordSelector()
+        self.reveal_timer = Timer()
 
     def run(self):
         print("[Game Manager] Starting game manager")
@@ -50,11 +53,12 @@ class GameManger(threading.Thread):
                 Headers.GAME_STATE, "init-round")
 
             self.send_new_roles()  # Send each player it's role.
-            self.round_loop() # Start the round loop.
+            self.send_new_word()  # Send the word to all clients.
+            self.round_loop()  # Start the round loop.
 
             self.network_handler.send_to_all_clients(
                 Headers.GAME_STATE, "end-round")
-            
+
             print(f"[Game Manager] Round {self.current_round} ended.")
 
     def send_new_roles(self) -> None:
@@ -65,10 +69,10 @@ class GameManger(threading.Thread):
             self.drawer = self.network_handler.clients[0]
 
         else:
-            self.drawer = self.remaining_drawers[random.randint(
-                0, len(self.remaining_drawers) - 1)]
+            self.drawer = random.choice(self.remaining_drawers)
 
         self.remaining_drawers.remove(self.drawer)
+        self.network_handler.set_drawer(self.drawer)
 
         for player in self.network_handler.clients:
             if (player is self.drawer):
@@ -79,29 +83,49 @@ class GameManger(threading.Thread):
 
         print("[Game Manager] Current drawer: " + str(self.drawer.name))
 
+    def send_new_word(self) -> None:
+
+        self.word_selector.pick_new_word()
+        self.network_handler.send_to_guessers(  # Send the word to all clients.
+            Headers.WORD_UPDATE,
+            self.word_selector.get_client_view())
+
+        self.drawer.send(Headers.WORD_UPDATE, self.word_selector.current_word)
+
     def round_loop(self) -> None:
         """The main loop of the round."""
 
         self.timer.start(GameConfig.round_duration)
-        while (not self.timer.done.is_set()):
+        self.reveal_timer.start(GameConfig.reveal_interval)
+
+        while (not self.timer.is_done()):
             if (self.drawer.canvas_update.is_set()):
 
-                self.network_handler.send_to_guessers(
-                    self.drawer, # Passing the drawer too so he won't get the update.
+                self.network_handler.send_to_guessers( # Send the canvas update to all guessers.
                     Headers.CANVAS_UPDATE,
                     self.drawer.get_canvas_update()
                 )
+ 
+            if (self.reveal_timer.is_done()): # Reveal a letter.
+                self.word_selector.reveal_letter()
+                self.network_handler.send_to_guessers(
+                    Headers.WORD_UPDATE,
+                    self.word_selector.get_client_view()
+                )
+
+                self.reveal_timer.start(GameConfig.reveal_interval)
+
+        self.timer.reset()
+        self.reveal_timer.reset()
 
     def finish_game(self) -> None:
         """End the game."""
 
-        print(Fore.RED + Style.BRIGHT + 
-              "[Game Manager] Game ended." + 
+        print(Fore.RED + Style.BRIGHT +
+              "[Game Manager] Game ended." +
               Style.RESET_ALL)
-        
+
         self.network_handler.send_to_all_clients(
             Headers.GAME_STATE, "game-ended")
-        
-        self.network_handler.stop()
 
-        
+        self.network_handler.stop()
