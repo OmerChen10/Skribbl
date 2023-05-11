@@ -13,6 +13,8 @@ class NetworkHandler(threading.Thread):
         self.num_clients: int = 0
         self.host: ClientHandler = None
 
+        self.current_drawer: ClientHandler = None
+
     def run(self):
         print("[Client Handler] Starting network handler")
 
@@ -46,9 +48,12 @@ class NetworkHandler(threading.Thread):
         for client in self.clients:
             client.send(header, server_msg)
 
-    def send_to_guessers(self, drawer: ClientHandler, header: int, server_msg) -> None:
+    def set_drawer(self, drawer: ClientHandler):
+        self.current_drawer = drawer
+
+    def send_to_guessers(self, header: int, server_msg) -> None:
         for client in self.clients:
-            if (client is not drawer):
+            if (client is not self.current_drawer):
                 client.send(header, server_msg)
 
     async def close_all_connections(self):
@@ -65,6 +70,8 @@ class NetworkHandler(threading.Thread):
               Style.RESET_ALL)
         
         super().join()
+
+    
 
 
 
