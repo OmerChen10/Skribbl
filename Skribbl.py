@@ -23,7 +23,7 @@ class Skribbl():
 
     def _randomize_game_code(self) -> str:
         code = ""
-        for _ in range(Constants.GameConfig.code_length):
+        for _ in range(Constants.GameConfig.CODE_LENGTH):
             code += str(random.randint(1, 9))
 
         # return code
