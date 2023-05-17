@@ -8,6 +8,7 @@ class ClientHandler():
     def __init__(self, socket: websockets, id: int) -> None:
         self.socket = socket
         self.id = id
+        self.name = None
         self.received_new_message: threading.Event = threading.Event()
         self.pending_messages = []
         self.received_messages = []
@@ -18,11 +19,16 @@ class ClientHandler():
         self.canvas_image = None
         self.canvas_update: threading.Event = threading.Event()
 
+        self.guess = None
+        self.new_guess = threading.Event()
+        self.score = 0
+
         self.thread = threading.Thread(target=self.initialize_client)
         self.thread.start()
 
+
     async def start_update_loop(self):
-        """ Start receiving and sending messages. """
+        """ Start the receiving and sending loops. """
 
         await asyncio.gather(self.start_receiving_loop(), self.start_sending_loop())
 
@@ -55,6 +61,8 @@ class ClientHandler():
         return False
 
     def receive(self):
+        """ Returns the last received message. """
+
         if (self.received_messages != []):
             return self.received_messages.pop(0)
 
@@ -64,6 +72,7 @@ class ClientHandler():
         return self.received_messages.pop(0)
 
     def send(self, header: int, server_msg):
+        """ Sends a message to the client. """
         msg_data = json.dumps({"value": server_msg})
         msg = f"{header}==={msg_data}END"
         self.pending_messages.append(msg)
@@ -72,7 +81,7 @@ class ClientHandler():
         self.message_sent.clear()
 
     def initialize_client(self) -> None:
-        """ Initializes the client. """
+        """ Runs the initial server-client handshake. """
 
         self.name = self.receive()
         print(f"[Client Handler] Client {self.id} has connected with name {self.name}.")
@@ -85,7 +94,8 @@ class ClientHandler():
 
         handlers = {
             str(Headers.GAME_STATE): self.handle_game_state,
-            str(Headers.CANVAS_UPDATE): self.handle_canvas_update
+            str(Headers.CANVAS_UPDATE): self.handle_canvas_update,
+            str(Headers.GUESS): self.handle_new_guess
         }
 
         while True:
@@ -101,6 +111,18 @@ class ClientHandler():
                 
                 except Exception as e:
                     print(f"[Client Handler] Error handling a request.")
+
+    def handle_new_guess(self, data: str) -> None:
+        """ Handles the client's guess. """
+
+        self.new_guess.set()
+        self.guess = data
+
+    def get_new_guess(self) -> str:
+        """ Returns the client's guess. """
+
+        self.new_guess.clear()
+        return self.guess
 
     def handle_game_state(self, data: str) -> None:
         """ Handles the client's game state request. """

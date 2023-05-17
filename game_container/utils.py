@@ -9,6 +9,8 @@ class Timer():
         self.done = threading.Event()
 
     def start(self, seconds):
+        """ Starts the timer for the given amount of seconds. """
+
         if (seconds < 0):
             raise ValueError("Input must be positive")
 
@@ -23,10 +25,14 @@ class Timer():
         self.done.set()
 
     def reset(self):
+        """ Resets the timer. """
+
         self.timer_thread.join()
         self.done.clear()
 
     def is_done(self):
+        """ Returns whether the timer is done. """
+
         return self.done.is_set()
 
 
@@ -37,7 +43,7 @@ class WordSelector():
         self.client_view = None
         self.number_of_revealed_letters = 0
 
-        with open(GameConfig.words_file_dir, "r") as f:
+        with open(GameConfig.WORDS_FILE_DIR, "r") as f:
             self.words = f.read().split("\n")
 
     def pick_new_word(self) -> str:
@@ -51,7 +57,7 @@ class WordSelector():
         self.words.remove(self.current_word)
 
         self.client_view = len(self.current_word) * ["_"]
-        amount_of_letters_to_reveal = len(self.current_word) * GameConfig.starting_percentage
+        amount_of_letters_to_reveal = len(self.current_word) * GameConfig.STARTING_PERCENTAGE
         for i in range(int(amount_of_letters_to_reveal)):
             self.reveal_letter()
 
@@ -60,7 +66,7 @@ class WordSelector():
 
         # Check if reached the maximum reveal percentage.
         revealed_percentage = self.number_of_revealed_letters / len(self.current_word)  
-        if (revealed_percentage >= GameConfig.max_reveal_percentage):
+        if (revealed_percentage >= GameConfig.MAX_REVEAL_PERCENTAGE):
             return
         
         letter_index = random.randint(0, len(self.current_word) - 1)
@@ -70,6 +76,8 @@ class WordSelector():
         self.number_of_revealed_letters += 1
 
     def get_client_view(self) -> str:
+        """ Returns the client view of the word (With the hidden letters). """
+
         return " ".join(self.client_view)
 
 

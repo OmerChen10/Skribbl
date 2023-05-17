@@ -15,12 +15,12 @@ class GameManger(threading.Thread):
         self.network_handler: NetworkHandler = network_handler
         self.num_of_players = 0
         self.remaining_drawers = None
-        self.current_round = 0
-        self.timer = Timer()
+        self.round_timer = Timer()
         self.word_selector = WordSelector()
         self.reveal_timer = Timer()
 
     def run(self):
+        """ Starts the game manager. """
         print("[Game Manager] Starting game manager")
 
         self.waitForStart()
@@ -28,6 +28,8 @@ class GameManger(threading.Thread):
         self.finish_game()
 
     def waitForStart(self) -> None:
+        """ Waits for the game to start. """
+
         print("[Game Manager] Waiting for game to start")
 
         while (self.network_handler.host is None):
@@ -36,6 +38,8 @@ class GameManger(threading.Thread):
         self.network_handler.host.ready.wait()
 
     def startGame(self) -> None:
+        """ Starts the game. """
+
         print("[Game Manager] Starting game")
         self.num_of_players = self.network_handler.num_clients
         self.remaining_drawers = self.network_handler.clients.copy()
@@ -45,10 +49,10 @@ class GameManger(threading.Thread):
         self.start_game_loop()
 
     def start_game_loop(self) -> None:
+        """ The main loop of the game. """
 
         for current_round in range(self.num_of_players):
-            self.current_round = current_round + 1
-            print(f"[Game Manager] Starting round {self.current_round}")
+            print(f"[Game Manager] Starting round {current_round + 1}")
             self.network_handler.send_to_all_clients(
                 Headers.GAME_STATE, "init-round")
 
@@ -59,7 +63,7 @@ class GameManger(threading.Thread):
             self.network_handler.send_to_all_clients(
                 Headers.GAME_STATE, "end-round")
 
-            print(f"[Game Manager] Round {self.current_round} ended.")
+            print(f"[Game Manager] Round {current_round + 1} ended.")
 
     def send_new_roles(self) -> None:
         """Send each player it's role for the current round."""
@@ -84,7 +88,8 @@ class GameManger(threading.Thread):
         print("[Game Manager] Current drawer: " + str(self.drawer.name))
 
     def send_new_word(self) -> None:
-
+        """ Picks a new word and sends it to all clients. """
+        
         self.word_selector.pick_new_word()
         self.network_handler.send_to_guessers(  # Send the word to all clients.
             Headers.WORD_UPDATE,
@@ -95,12 +100,11 @@ class GameManger(threading.Thread):
     def round_loop(self) -> None:
         """The main loop of the round."""
 
-        self.timer.start(GameConfig.round_duration)
-        self.reveal_timer.start(GameConfig.reveal_interval)
+        self.round_timer.start(GameConfig.ROUND_DURATION)
+        self.reveal_timer.start(GameConfig.REVEAL_INTERVAL)
 
-        while (not self.timer.is_done()):
+        while (not self.round_timer.is_done()):
             if (self.drawer.canvas_update.is_set()):
-
                 self.network_handler.send_to_guessers( # Send the canvas update to all guessers.
                     Headers.CANVAS_UPDATE,
                     self.drawer.get_canvas_update()
@@ -110,13 +114,25 @@ class GameManger(threading.Thread):
                 self.word_selector.reveal_letter()
                 self.network_handler.send_to_guessers(
                     Headers.WORD_UPDATE,
-                    self.word_selector.get_client_view()
-                )
+                    self.word_selector.get_client_view())
 
-                self.reveal_timer.start(GameConfig.reveal_interval)
+                self.reveal_timer.start(GameConfig.REVEAL_INTERVAL)
 
-        self.timer.reset()
+            self.check_guesses()
+
+            time.sleep(0.1)
+
+        self.round_timer.reset()
         self.reveal_timer.reset()
+
+    def check_guesses(self) -> None:
+        """ Check each player's guess."""
+
+        for player in self.network_handler.clients:
+            if (player is not self.drawer):
+                if (player.new_guess.is_set()):
+                    if (player.get_new_guess() == self.word_selector.current_word):
+                        player.send(Headers.GUESS_CORRECT, self.word_selector.current_word)
 
     def finish_game(self) -> None:
         """End the game."""
