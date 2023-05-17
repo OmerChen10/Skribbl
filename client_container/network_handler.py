@@ -16,6 +16,8 @@ class NetworkHandler(threading.Thread):
         self.current_drawer: ClientHandler = None
 
     def run(self):
+        """ Starts listening for new connections. """
+
         print("[Client Handler] Starting network handler")
 
         asyncio.set_event_loop(asyncio.new_event_loop())
@@ -27,7 +29,9 @@ class NetworkHandler(threading.Thread):
         await websockets.serve(self.handle_connection, "0.0.0.0", self.game_code)
 
     async def handle_connection(self, websocket):
-        if (NetworkConfig.reconnection_enabled):
+        """ Handles a new connection and create a new client handler for it. """
+
+        if (NetworkConfig.RECONNECTION_ENABLED):
             for client in self.clients:
                 if (client.socket.remote_address[0] == websocket.remote_address[0]):
                     print(f"[Network Handler] Client {client.id} reconnected.")
@@ -43,24 +47,32 @@ class NetworkHandler(threading.Thread):
 
         await new_client.start_update_loop()
 
-
     def send_to_all_clients(self, header: int, server_msg) -> None:
+        """ Sends a message to all clients. """
+
         for client in self.clients:
             client.send(header, server_msg)
 
     def set_drawer(self, drawer: ClientHandler):
+        """ Sets the current drawer."""
+
         self.current_drawer = drawer
 
     def send_to_guessers(self, header: int, server_msg) -> None:
+        """ Sends a message to all clients except the current drawer. """
+
         for client in self.clients:
             if (client is not self.current_drawer):
                 client.send(header, server_msg)
 
     async def close_all_connections(self):
+        """ Closes all client connections. """
+
         for client in self.clients:
             await client.close()
 
     def stop(self):
+        """ Stops the network handler. """
         # Close all client connections
         self.loop.create_task(self.close_all_connections())
         self.loop.stop()

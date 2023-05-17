@@ -31,10 +31,12 @@ class WebsiteServer(threading.Thread):
             return flask.render_template('game_not_found.html'), 404
 
     def run(self):
+        """ Starts the website server. """
+        
         print("[Website] Starting website server")
 
         self.app.run(host='0.0.0.0',
-                     port=Constants.NetworkConfig.website_port, debug=False)
+                     port=Constants.NetworkConfig.WEBSITE_PORT, debug=False)
 
 
 if __name__ == '__main__':
