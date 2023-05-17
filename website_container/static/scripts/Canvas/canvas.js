@@ -67,7 +67,7 @@ class Canvas {
             this.ctx.stroke();
         }
 
-        console.log("Canvas initialized.")
+        console.log("[Canvas] Canvas initialized");
     }
 
     reinitialize() {
@@ -91,7 +91,7 @@ class Canvas {
     enableDrawing() {
         if (this.isEnabled) return;
         this.isEnabled = true;
-        console.log('Drawing enabled');
+        console.log('[Canvas] Drawing enabled');
 
         this.reinitialize();
         this.isDrawing = false;
@@ -110,7 +110,7 @@ class Canvas {
     disableDrawing() {
         if (!this.isEnabled) return;
         this.isEnabled = false;
-        console.log('Drawing disabled');
+        console.log('[Canvas] Drawing disabled');
 
         this.reinitialize();
 

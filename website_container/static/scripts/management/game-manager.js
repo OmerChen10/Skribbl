@@ -6,10 +6,11 @@ class GameManger {
         this.player_data = {
             "username": null,
             "isHost": null,
-            "isDrawer": null
+            "isDrawer": null,
+            "guessedCorrectly": false
         }
         this.game = {
-            "game_state": null
+            "gameState": null
         }
 
         this.Headers = {
@@ -17,7 +18,9 @@ class GameManger {
             IS_HOST: 2,
             PLAYER_ROLE: 3,
             CANVAS_UPDATE: 4,
-            WORD_UPDATE: 5
+            WORD_UPDATE: 5,
+            GUESS: 6,
+            GUESS_CORRECT: 7,
         }
     }
 
@@ -39,7 +42,7 @@ class GameManger {
         });
     }
     moveToWaitScreen() {
-        console.log("Moving to wait screen");
+        console.log("[Game Manager] Waiting for the game to start");
         return new Promise(async (resolve, reject) => {
             let usernameContainer = document.querySelector(".username");
             let hostWaitScreen = document.getElementById("host-wait-screen");
@@ -65,7 +68,7 @@ class GameManger {
     }
     moveToGameScreen() {
         return new Promise((resolve, reject) => {
-            console.log("Moving to game screen");
+            console.log("[Game Manager] Starting the game");
 
             document.getElementById("host-wait-screen").style.display = "none";
             document.getElementById("guest-wait-screen").style.display = "none";
@@ -79,12 +82,12 @@ class GameManger {
 
     async startGameLoop() {
         return new Promise(async (resolve, reject) => {
-            console.log("Starting game loop");
 
+            await waitForSeconds(1); 
             await this.moveToGameScreen();
 
             document.addEventListener("game-ended", () => {
-                console.log("Game ended");
+                console.log("[Game Manager] Game ended");
                 resolve();
             });
 
@@ -97,14 +100,13 @@ class GameManger {
 
     async runRound() {
         return new Promise(async (resolve, reject) => {
-            console.log("New round started");
+            console.log("[Game Manager] Starting new round");
             
-            console.log("[Game Manager] Waiting for new player role and word")
             await waitForEvent("new-player-role")
             await waitForEvent("new-word");
 
             document.addEventListener("end-round", () => {
-                console.log("Round ended");
+                console.log("[Game Manager] Round ended");
                 this.canvas.reset();
                 resolve();
             });
@@ -119,6 +121,7 @@ class GameManger {
     }
 
     startDrawerLoop() {
+        document.querySelector(".guess").style.display = "none";
         this.canvas.enableDrawing();
         let duringCooldown = false;
     }
@@ -126,5 +129,20 @@ class GameManger {
     startGuesserLoop() {
         this.canvas.disableDrawing();
         this.canvas.reinitialize();
+
+        let guessInput = document.querySelector(".guess");
+        guessInput.style.display = "flex";
+
+        document.getElementById("word-submit-button").addEventListener("click", () => {
+            let guess = document.getElementById("word-input").value;
+            this.networkHandler.send(this.Headers.GUESS, guess); // Send the guess to the server
+            // Clear the input
+            document.getElementById("word-input").value = "";
+        });
+
+        document.addEventListener("guess-correct", () => {
+            console.log("[Game Manager] Guess correct");
+            guessInput.style.display = "none";
+        });
     }
 }

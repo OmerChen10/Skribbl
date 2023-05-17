@@ -76,6 +76,10 @@ button:hover {
     width: 100%;
 }
 
+.guess {
+    padding-top: 15px;
+}
+
 canvas {
     width: 70vw;
     height: 70vw;
