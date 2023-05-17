@@ -10,7 +10,9 @@ class NetworkHandler{
             IS_HOST: 2,
             PLAYER_ROLE: 3,
             CANVAS_UPDATE: 4,
-            WORD_UPDATE: 5
+            WORD_UPDATE: 5,
+            GUESS: 6,
+            GUESS_CORRECT: 7,
         }
     }
 
@@ -21,7 +23,7 @@ class NetworkHandler{
             this.ws = new WebSocket('ws://' + ip + ':' + gameCode); // Connect to server
 
             this.ws.onopen = function (event) {
-                console.log('Connected to game server');
+                console.log("[Network Handler] Connected to server");
                 resolve()
             };
 
@@ -97,9 +99,19 @@ class NetworkHandler{
                     break;
 
                 case this.Headers.WORD_UPDATE:
+                    if (this.player.player_data.guessedCorrectly) {
+                        break;
+                    }
+
                     document.dispatchEvent(new CustomEvent("new-word"));
-                    let wordText = document.getElementById("word-text");
-                    wordText.textContent = data; 
+                    document.getElementById("word-text").textContent = data;
+                    break;
+
+                case this.Headers.GUESS_CORRECT:
+                    document.dispatchEvent(new CustomEvent("guess-correct"));
+                    document.getElementById("word-text").textContent = data;
+                    this.player.player_data.guessedCorrectly = true;
+                    break;
 
                 default:
                     break;
