@@ -20,6 +20,8 @@ class CanvasNet {
                     {"header": this.actions.DRAWING, 
                      "data": this.canvas.getMousePoses()});
 
+                console.log("Sending new update");
+
                 this.duringCooldown = false;
             }, this.sendingInterval);
         }
@@ -28,8 +30,7 @@ class CanvasNet {
     startDrawing() {
         this.networkHandler.sendJson(this.networkHandler.Headers.CANVAS_UPDATE, 
             {"header": this.actions.START_DRAWING, 
-             "data": null});
-            
+             "data": null});    
     }
 
     stopDrawing() {

@@ -19,6 +19,8 @@ class GameManger(threading.Thread):
         self.word_selector = WordSelector()
         self.reveal_timer = Timer()
 
+        self.game_ended = threading.Event()
+
     def run(self):
         """ Starts the game manager. """
         print("[Game Manager] Starting game manager")
@@ -137,11 +139,8 @@ class GameManger(threading.Thread):
     def finish_game(self) -> None:
         """End the game."""
 
-        print(Fore.RED + Style.BRIGHT +
-              "[Game Manager] Game ended." +
-              Style.RESET_ALL)
-
         self.network_handler.send_to_all_clients(
             Headers.GAME_STATE, "game-ended")
 
-        self.network_handler.stop()
+        self.game_ended.set()
+        

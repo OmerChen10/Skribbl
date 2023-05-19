@@ -83,7 +83,6 @@ class GameManger {
     async startGameLoop() {
         return new Promise(async (resolve, reject) => {
 
-            await waitForSeconds(1); 
             await this.moveToGameScreen();
 
             document.addEventListener("game-ended", () => {
