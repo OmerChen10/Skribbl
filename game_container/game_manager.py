@@ -19,6 +19,8 @@ class GameManger(threading.Thread):
         self.word_selector = WordSelector()
         self.reveal_timer = Timer()
 
+        self.correct_guesses = 0
+
         self.game_ended = threading.Event()
 
     def run(self):
@@ -61,6 +63,7 @@ class GameManger(threading.Thread):
             self.send_new_roles()  # Send each player it's role.
             self.send_new_word()  # Send the word to all clients.
             self.round_loop()  # Start the round loop.
+            print("[Game Manager] Round ended.")
 
             self.network_handler.send_to_all_clients(
                 Headers.GAME_STATE, "end-round")
@@ -102,6 +105,7 @@ class GameManger(threading.Thread):
     def round_loop(self) -> None:
         """The main loop of the round."""
 
+        self.correct_guesses = 0
         self.round_timer.start(GameConfig.ROUND_DURATION)
         self.reveal_timer.start(GameConfig.REVEAL_INTERVAL)
 
@@ -121,6 +125,10 @@ class GameManger(threading.Thread):
                 self.reveal_timer.start(GameConfig.REVEAL_INTERVAL)
 
             self.check_guesses()
+            # If all players guessed the word, end the round.
+            if (self.correct_guesses == self.num_of_players - 1):
+                print("[Game Manager] All players guessed the word.")
+                break
 
             time.sleep(0.1)
 
@@ -135,6 +143,7 @@ class GameManger(threading.Thread):
                 if (player.new_guess.is_set()):
                     if (player.get_new_guess() == self.word_selector.current_word):
                         player.send(Headers.GUESS_CORRECT, self.word_selector.current_word)
+                        self.correct_guesses += 1
 
     def finish_game(self) -> None:
         """End the game."""

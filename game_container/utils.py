@@ -23,11 +23,12 @@ class Timer():
     def sleep(self, seconds):
         time.sleep(seconds)
         self.done.set()
+        self.timer_thread.join(timeout=0.1)
 
     def reset(self):
         """ Resets the timer. """
 
-        self.timer_thread.join()
+        self.timer_thread.join(timeout=0.1)
         self.done.clear()
 
     def is_done(self):
