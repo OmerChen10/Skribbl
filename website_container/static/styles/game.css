@@ -1,6 +1,9 @@
 body{
     background-color: #c8ecec;
     color: rgb(16, 70, 95);
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
 }
 
 h1{
@@ -25,6 +28,9 @@ input {
     margin: 2px;
     padding: 5px;
     border-style: solid;
+    width: 12rem;
+    height: 2rem;
+    font-size: 1.5rem;
 }
 
 ::placeholder{
@@ -38,11 +44,13 @@ button {
     background-color: rgb(128, 197, 209);
     border-color: rgb(16, 70, 95);
     color: rgb(16, 70, 95);
-    padding: 4px;
-    width: 50px;
+    padding: 5px;
+    width: 5rem;
+    height: 100%;
     font-family: Calibri;
     border-style: solid;
     font-weight: 1000;
+    font-size: 1.5rem;
 }
 
 button:hover {
@@ -68,21 +76,27 @@ button:hover {
 
 .game {
     display: flex;
-    display: none;
     align-items: center;
     justify-content: center;
     flex-direction: column;
-    height: 75vh;
+    height: 100%;
     width: 100%;
 }
 
 .guess {
     padding-top: 15px;
+    gap: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: row;
+    height: 3rem;
+
 }
 
 canvas {
-    width: 70vw;
-    height: 70vw;
+    width: 95%;
+    aspect-ratio: 1/1;
     max-width: 700px; 
     max-height: 700px;
     border: 5px solid rgb(16, 70, 95);
