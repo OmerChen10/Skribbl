@@ -18,6 +18,7 @@ input {
     margin: 2px;
     padding: 5px;
     border-style: solid;
+    font-family: Comic Sans MS;
 }
 
 ::placeholder{
@@ -33,9 +34,9 @@ button {
     color: rgb(16, 70, 95);
     padding: 4px;
     width: 50px;
-    font-family: Calibri;
     border-style: solid;
     font-weight: 1000;
+    font-family: Comic Sans MS;
 }
 
 button:hover {
