@@ -1,19 +1,12 @@
+import { NetworkConfig } from "../constants.js";
+import { CanvasPacket } from "../utils.js";
 
-class NetworkHandler{
+
+export class NetworkHandler{
     constructor(player){
         this.ws = null;
         this.player = player;
         this.receivedNewMessage = false;
-
-        this.Headers = {
-            GAME_STATE: 1,
-            IS_HOST: 2,
-            PLAYER_ROLE: 3,
-            CANVAS_UPDATE: 4,
-            WORD_UPDATE: 5,
-            GUESS: 6,
-            GUESS_CORRECT: 7,
-        }
     }
 
     connectToGameServer(){
@@ -80,26 +73,26 @@ class NetworkHandler{
             let data = JSON.parse(request[1]).value;
 
             switch (header) {
-                case this.Headers.GAME_STATE:
+                case NetworkConfig.HEADERS.GAME_STATE:
                     document.dispatchEvent(new CustomEvent(data));
                     this.player.game.game_state = data;
                     break;
 
-                case this.Headers.IS_HOST:
+                case NetworkConfig.HEADERS.IS_HOST:
                     this.player.player_data.isHost = data;
                     document.dispatchEvent(new CustomEvent("is-host"));
                     break;
 
-                case this.Headers.PLAYER_ROLE:
+                case NetworkConfig.HEADERS.PLAYER_ROLE:
                     this.player.player_data.isDrawer = data;
                     document.dispatchEvent(new CustomEvent("new-player-role"));
                     break;
 
-                case this.Headers.CANVAS_UPDATE:
+                case NetworkConfig.HEADERS.CANVAS_UPDATE:
                     this.player.canvas.handleUpdate(data);
                     break;
 
-                case this.Headers.WORD_UPDATE:
+                case NetworkConfig.HEADERS.WORD_UPDATE:
                     if (this.player.player_data.guessedCorrectly) {
                         break;
                     }
@@ -108,7 +101,7 @@ class NetworkHandler{
                     document.getElementById("word-text").textContent = data;
                     break;
 
-                case this.Headers.GUESS_CORRECT:
+                case NetworkConfig.HEADERS.GUESS_CORRECT:
                     document.dispatchEvent(new CustomEvent("guess-correct"));
                     document.getElementById("word-text").textContent = data;
                     this.player.player_data.guessedCorrectly = true;

@@ -4,12 +4,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script src="../static/scripts/main.js"></script>
-    <script src="../static/scripts/management/game-manager.js"></script>
-    <script src="../static/scripts/management/network-handler.js"></script>
-    <script src="../static/scripts/Canvas/canvas.js"></script>
-    <script src="../static/scripts/utils.js"></script>
-    <script src="../static/scripts/Canvas/canvas-network.js"></script>
+    <script src="../static/scripts/main.js", type="module"></script>
     <link rel="stylesheet" href="../static/styles/game.css">
     <title>Skribbl</title>
     
@@ -19,7 +14,7 @@
         <h1>Enter your Username</h1>
         <div id="username-input">
             <input type="text" id="username-text" placeholder="Username">
-            <button onclick="main()">Join</button>
+            <button id="join-button">Join</button>
         </div>
     </div>
 

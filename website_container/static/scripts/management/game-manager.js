@@ -1,5 +1,10 @@
+import { waitForEvent } from "../utils.js";
+import { NetworkConfig } from "../constants.js";
+import { NetworkHandler } from "./network-handler.js";
+import { Canvas } from "../Canvas/canvas.js";
 
-class GameManger {
+
+export class GameManger {
     constructor() {
         this.networkHandler = new NetworkHandler(this);
         this.canvas = new Canvas(this.networkHandler);
@@ -11,16 +16,6 @@ class GameManger {
         }
         this.game = {
             "gameState": null
-        }
-
-        this.Headers = {
-            GAME_STATE: 1,
-            IS_HOST: 2,
-            PLAYER_ROLE: 3,
-            CANVAS_UPDATE: 4,
-            WORD_UPDATE: 5,
-            GUESS: 6,
-            GUESS_CORRECT: 7,
         }
     }
 
@@ -54,7 +49,7 @@ class GameManger {
                 hostWaitScreen.style.display = "flex";
 
                 startGameButton.addEventListener("click", () => {
-                    this.networkHandler.send(this.Headers.GAME_STATE, "host-ready")
+                    this.networkHandler.send(NetworkConfig.HEADERS.GAME_STATE, "host-ready")
                 });
             }
 
@@ -134,7 +129,7 @@ class GameManger {
 
         document.getElementById("word-submit-button").addEventListener("click", () => {
             let guess = document.getElementById("word-input").value;
-            this.networkHandler.send(this.Headers.GUESS, guess); // Send the guess to the server
+            this.networkHandler.send(NetworkConfig.HEADERS.GUESS, guess); // Send the guess to the server
             // Clear the input
             document.getElementById("word-input").value = "";
         });

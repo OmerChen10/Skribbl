@@ -1,5 +1,5 @@
  
-function waitForEvent(eventName){
+export function waitForEvent(eventName){
     return new Promise((resolve, reject) => {
         document.addEventListener(eventName, () => {
             resolve();
@@ -7,7 +7,7 @@ function waitForEvent(eventName){
     });
 }    
 
-function waitForSeconds(seconds){
+export function waitForSeconds(seconds){
     return new Promise((resolve, reject) => {
         setTimeout(() => {
             resolve();
@@ -16,7 +16,7 @@ function waitForSeconds(seconds){
 }
 
 
-class CanvasPacket {
+export class CanvasPacket {
     constructor(header, data) {
         this.header = header;
         this.data = data;

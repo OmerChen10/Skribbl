@@ -1,5 +1,7 @@
+import { CanvasNet } from "./canvas-network.js";
 
-class Canvas {
+
+export class Canvas {
     constructor(networkHandler) {
         this.initialize();
         this.networkHandler = networkHandler;

@@ -1,41 +1,40 @@
+import { CanvasConfig, NetworkConfig } from "../constants.js";
+import { CanvasPacket } from "../utils.js";
+import { NetworkHandler } from "../management/network-handler.js";
 
-class CanvasNet {
+
+export class CanvasNet {
     constructor(canvas, networkHandler) {
         this.canvas = canvas;
         this.networkHandler = networkHandler;
-        this.actions = {
-            START_DRAWING: 1,
-            STOP_DRAWING: 2,
-            DRAWING: 3
-        }
+
         this.duringCooldown = false;
-        this.sendingInterval = 100; // ms
     }
 
     sendNewUpdate() {
         if (!this.duringCooldown) {
             this.duringCooldown = true;
             setTimeout(() => {
-                this.networkHandler.send(this.networkHandler.Headers.CANVAS_UPDATE, 
-                    new CanvasPacket(this.actions.DRAWING, this.canvas.getMousePoses()));
+                this.networkHandler.send(NetworkConfig.HEADERS.CANVAS_UPDATE, 
+                    new CanvasPacket(CanvasConfig.ACTIONS.DRAWING, this.canvas.getMousePoses()));
 
                 console.log("Sending new update");
 
                 this.duringCooldown = false;
-            }, this.sendingInterval);
+            }, CanvasConfig.SENDING_INTERVAL);
         }
     }
 
     startDrawing() {
-        this.networkHandler.send(this.networkHandler.Headers.CANVAS_UPDATE, 
-            new CanvasPacket(this.actions.START_DRAWING));    
+        this.networkHandler.send(NetworkConfig.HEADERS.CANVAS_UPDATE, 
+            new CanvasPacket(CanvasConfig.ACTIONS.START_DRAWING));    
     }
 
     stopDrawing() {
         // delay the stop drawing to prevent the packet from arriving before the drawing packet
         setTimeout(() => {
-            this.networkHandler.send(this.networkHandler.Headers.CANVAS_UPDATE, 
-                new CanvasPacket(this.actions.STOP_DRAWING));
+            this.networkHandler.send(NetworkConfig.HEADERS.CANVAS_UPDATE, 
+                new CanvasPacket(CanvasConfig.ACTIONS.STOP_DRAWING));
             }, 100);
     }
 
@@ -44,16 +43,16 @@ class CanvasNet {
         let poseX, poseY;
 
         switch (canvasUpdate.header) {
-            case this.actions.START_DRAWING:
+            case CanvasConfig.ACTIONS.START_DRAWING:
                 this.canvas.ctx.beginPath();
                 break;
 
-            case this.actions.STOP_DRAWING:
+            case CanvasConfig.ACTIONS.STOP_DRAWING:
                 this.canvas.ctx.closePath();
                 this.lasPos = null;
                 break;
 
-            case this.actions.DRAWING:
+            case CanvasConfig.ACTIONS.DRAWING:
                 if (this.lasPos != null) { // Prevent the holes that are created between the chunks of data.
                     this.canvas.ctx.lineTo(this.lasPos[0], this.lasPos[1]);
                     this.canvas.ctx.stroke();
