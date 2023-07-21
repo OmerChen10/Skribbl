@@ -14,3 +14,15 @@ function waitForSeconds(seconds){
         }, seconds * 1000);
     });
 }
+
+
+class CanvasPacket {
+    constructor(header, data) {
+        this.header = header;
+        this.data = data;
+    }
+
+    build() {
+        return JSON.stringify(this);
+    }
+}

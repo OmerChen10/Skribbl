@@ -45,13 +45,14 @@ class NetworkHandler{
 
     send(header, data){
         if(this.getSocketState()){
-            this.ws.send(header + "===" + data + "END");
-        }
-    }
+            // Check if the data is a canvas packet
+            if (data instanceof CanvasPacket) {
+                this.ws.send(header + "===" + data.build() + "END");
+                return;
+            }
 
-    sendJson(header, data){
-        if(this.getSocketState()){
-            this.ws.send(header + "===" + JSON.stringify(data) + "END");
+            // Else send the data as a string
+            this.ws.send(header + "===" + data + "END");
         }
     }
 

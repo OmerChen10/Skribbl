@@ -16,9 +16,8 @@ class CanvasNet {
         if (!this.duringCooldown) {
             this.duringCooldown = true;
             setTimeout(() => {
-                this.networkHandler.sendJson(this.networkHandler.Headers.CANVAS_UPDATE, 
-                    {"header": this.actions.DRAWING, 
-                     "data": this.canvas.getMousePoses()});
+                this.networkHandler.send(this.networkHandler.Headers.CANVAS_UPDATE, 
+                    new CanvasPacket(this.actions.DRAWING, this.canvas.getMousePoses()));
 
                 console.log("Sending new update");
 
@@ -28,17 +27,15 @@ class CanvasNet {
     }
 
     startDrawing() {
-        this.networkHandler.sendJson(this.networkHandler.Headers.CANVAS_UPDATE, 
-            {"header": this.actions.START_DRAWING, 
-             "data": null});    
+        this.networkHandler.send(this.networkHandler.Headers.CANVAS_UPDATE, 
+            new CanvasPacket(this.actions.START_DRAWING));    
     }
 
     stopDrawing() {
         // delay the stop drawing to prevent the packet from arriving before the drawing packet
         setTimeout(() => {
-            this.networkHandler.sendJson(this.networkHandler.Headers.CANVAS_UPDATE, 
-                {"header": this.actions.STOP_DRAWING, 
-                "data": null});
+            this.networkHandler.send(this.networkHandler.Headers.CANVAS_UPDATE, 
+                new CanvasPacket(this.actions.STOP_DRAWING));
             }, 100);
     }
 
