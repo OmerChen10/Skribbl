@@ -7,16 +7,18 @@ from Constants import *
 class Timer():
     def __init__(self):
         self.done = threading.Event()
-        self.abort = threading.Event()
 
-    def start(self, seconds):
+    def start(self, duration):
         """ Starts the timer for the given amount of seconds. """
 
-        if (seconds < 0):
+        self.duration = duration
+
+        if (duration < 0):
             raise ValueError("Input must be positive")
 
         self.done.clear()
-        self.timer_thread = threading.Timer(seconds, self.done.set)
+        self.timer_thread = threading.Timer(duration, self.done.set)
+        self.start_time = time.time()
         self.timer_thread.start()
 
     def reset(self):
@@ -29,6 +31,11 @@ class Timer():
         """ Returns whether the timer is done. """
 
         return self.done.is_set()
+    
+    def getTimeLeft(self):
+        """ Returns the time left on the timer. """
+
+        return self.duration - (time.time() - self.start_time)
 
 
 class WordSelector():

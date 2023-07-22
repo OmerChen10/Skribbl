@@ -8,6 +8,7 @@ export const NetworkConfig = {
         "WORD_UPDATE": 5,
         "GUESS": 6,
         "GUESS_CORRECT": 7,
+        "LEADERBOARD_UPDATE": 8,
     }
 }
 
