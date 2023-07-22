@@ -8,7 +8,8 @@ from colorama import Fore, Style
 class Skribbl():
     def __init__(self) -> None:
         self.game_code = self._randomize_game_code()
-        self.website = WebsiteServer(self.game_code)
+        self.website = WebsiteServer.get_instance()
+        self.website.add_game_code(self.game_code)
         self.network_manager = NetworkHandler(self.game_code)
         self.game_manager = GameManger(self.network_manager)
 
@@ -17,7 +18,6 @@ class Skribbl():
               f"[Skribbl] Starting game with code: {self.game_code}"
               + Style.RESET_ALL)
 
-        self.website.start()
         self.network_manager.start()
         self.game_manager.start()
 
@@ -28,8 +28,8 @@ class Skribbl():
         for _ in range(Constants.GameConfig.CODE_LENGTH):
             code += str(random.randint(1, 9))
 
-        # return code
-        return "1111"
+        return code
+
     
     def waitForFinish(self):
         self.game_manager.game_ended.wait()
