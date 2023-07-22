@@ -69,7 +69,13 @@ class ClientHandler():
         self.received_new_message.wait()
         self.received_new_message.clear()
 
-        return self.received_messages.pop(0)
+        try:
+            msg = self.received_messages.pop(0)
+            return msg
+        
+        except Exception as e:
+            print(f"[Client Handler] Error receiving message: {e}")
+            return ""
 
     def send(self, header: int, server_msg):
         """ Sends a message to the client. """
@@ -147,3 +153,4 @@ class ClientHandler():
         """ Closes the client. """
 
         await self.socket.close()
+        asyncio.get_event_loop().stop()
