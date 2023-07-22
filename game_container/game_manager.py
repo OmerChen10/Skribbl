@@ -69,11 +69,12 @@ class GameManger(threading.Thread):
 
             print(f"[Game Manager] Round {current_round + 1} ended.")
 
-            # Show the leaderboard.
-            self.network_handler.send_to_all_clients(
-                Headers.LEADERBOARD_UPDATE, self.assemble_leaderboard())    
-            
-            time.sleep(GameConfig.ROUND_INTERVAL)
+            # Send the leaderboard to all clients
+            if (not current_round == self.num_of_players - 1):
+                self.network_handler.send_to_all_clients(
+                    Headers.LEADERBOARD_UPDATE, self.assemble_leaderboard())    
+
+                time.sleep(GameConfig.ROUND_INTERVAL)
 
     def send_new_roles(self) -> None:
         """Send each player it's role for the current round."""
@@ -158,6 +159,11 @@ class GameManger(threading.Thread):
 
         self.network_handler.send_to_all_clients(
             Headers.GAME_STATE, "game-ended")
+
+        
+        winner = max(self.network_handler.clients, key=lambda client: client.score)
+        self.network_handler.send_to_all_clients(
+            Headers.END_SCREEN, {"name": winner.name, "score": winner.score})
 
         self.game_ended.set()
 

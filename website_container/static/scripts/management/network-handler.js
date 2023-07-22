@@ -112,6 +112,10 @@ export class NetworkHandler{
                     document.dispatchEvent(new CustomEvent("leaderboard-update", { detail: data }));
                     break;  
 
+                case NetworkConfig.HEADERS.END_SCREEN:
+                    document.dispatchEvent(new CustomEvent("end-screen", { detail: data }));
+                    break;
+
                 default:
                     break;
             }

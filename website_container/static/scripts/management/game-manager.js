@@ -36,6 +36,7 @@ export class GameManger {
             resolve();
         });
     }
+    
     moveToWaitScreen() {
         console.log("[Game Manager] Waiting for the game to start");
         return new Promise(async (resolve, reject) => {
@@ -61,6 +62,7 @@ export class GameManger {
             resolve();
         });
     }
+
     moveToGameScreen() {
         return new Promise((resolve, reject) => {
             console.log("[Game Manager] Starting the game");
@@ -82,6 +84,11 @@ export class GameManger {
 
             document.addEventListener("game-ended", () => {
                 console.log("[Game Manager] Game ended");
+
+                document.addEventListener("end-screen", (e) => {
+                    this.showEndScreen(e.detail);
+                });
+
                 resolve();
             });
 
@@ -159,5 +166,15 @@ export class GameManger {
             playerElement.textContent = playerData;
             playerList.appendChild(playerElement);
         }
+ 
+    }
+
+    showEndScreen(winner) {
+        document.getElementById("main-container").style.display = "none";
+        document.getElementById("end-screen").style.display = "flex";
+
+        let winnerText = document.getElementById("winner-text");
+        winnerText.textContent = "THE WINNER IS: " + winner.name + "!" + 
+                                 "\nWITH A SCORE OF: " + winner.score + " POINTS!";
     }
 }
