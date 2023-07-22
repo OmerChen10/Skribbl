@@ -18,8 +18,6 @@ export class CanvasNet {
                 this.networkHandler.send(NetworkConfig.HEADERS.CANVAS_UPDATE, 
                     new CanvasPacket(CanvasConfig.ACTIONS.DRAWING, this.canvas.getMousePoses()));
 
-                console.log("Sending new update");
-
                 this.duringCooldown = false;
             }, CanvasConfig.SENDING_INTERVAL);
         }
@@ -62,10 +60,10 @@ export class CanvasNet {
                     poseX = canvasUpdate.data[i][0] * this.canvas.canvas.width; // Convert the mouse position to the canvas's size
                     poseY = canvasUpdate.data[i][1] * this.canvas.canvas.height; // Convert the mouse position to the canvas's size
                     this.canvas.ctx.lineTo(poseX, poseY);
+                    this.canvas.ctx.stroke();
                 }
                 
-                this.lasPos = [poseX, poseY];
-                this.canvas.ctx.stroke();
+                this.lasPos = [poseX, poseY];        
         }
     }
 }

@@ -17,5 +17,5 @@ export const CanvasConfig = {
         "STOP_DRAWING": 2,
         "DRAWING": 3
     },
-    "SENDING_INTERVAL": 50 // ms
+    "SENDING_INTERVAL": 100 // ms
 }

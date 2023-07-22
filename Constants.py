@@ -4,7 +4,7 @@ import os
 class GameConfig():
 
     CODE_LENGTH = 4
-    ROUND_DURATION = 30 # Seconds
+    ROUND_DURATION = 20 # Seconds
 
     # Words 
     STARTING_PERCENTAGE = 0.25 # The percentage of the word that is shown at the start of the round.

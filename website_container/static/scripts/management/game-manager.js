@@ -1,4 +1,4 @@
-import { waitForEvent } from "../utils.js";
+import { waitForEvents } from "../utils.js";
 import { NetworkConfig } from "../constants.js";
 import { NetworkHandler } from "./network-handler.js";
 import { Canvas } from "../Canvas/canvas.js";
@@ -32,7 +32,7 @@ export class GameManger {
 
             this.player_data.username = username;
             this.networkHandler.sendRaw(username);
-            await waitForEvent("is-host");
+            await waitForEvents("is-host");
             resolve();
         });
     }
@@ -57,7 +57,7 @@ export class GameManger {
                 guestWaitScreen.style.display = "flex";
             }
             
-            await waitForEvent("game-started");
+            await waitForEvents("game-started");
             resolve();
         });
     }
@@ -86,7 +86,7 @@ export class GameManger {
             });
 
             while (true) {
-                await waitForEvent("init-round");
+                await waitForEvents("init-round");
                 await this.runRound();
             }
         });
@@ -96,8 +96,8 @@ export class GameManger {
         return new Promise(async (resolve, reject) => {
             console.log("[Game Manager] Starting new round");
             
-            await waitForEvent("new-player-role")
-            await waitForEvent("new-word");
+            await waitForEvents("new-player-role", "new-word");
+            console.log("[Game Manager] Received new word and player role");
 
             document.addEventListener("end-round", () => {
                 console.log("[Game Manager] Round ended");

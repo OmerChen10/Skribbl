@@ -63,7 +63,6 @@ class GameManger(threading.Thread):
             self.send_new_roles()  # Send each player it's role.
             self.send_new_word()  # Send the word to all clients.
             self.round_loop()  # Start the round loop.
-            print("[Game Manager] Round ended.")
 
             self.network_handler.send_to_all_clients(
                 Headers.GAME_STATE, "end-round")

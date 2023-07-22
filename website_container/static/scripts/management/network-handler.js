@@ -85,6 +85,7 @@ export class NetworkHandler{
 
                 case NetworkConfig.HEADERS.PLAYER_ROLE:
                     this.player.player_data.isDrawer = data;
+                    this.player.player_data.guessedCorrectly = false;
                     document.dispatchEvent(new CustomEvent("new-player-role"));
                     break;
 
@@ -93,11 +94,11 @@ export class NetworkHandler{
                     break;
 
                 case NetworkConfig.HEADERS.WORD_UPDATE:
-                    if (this.player.player_data.guessedCorrectly) {
+                    document.dispatchEvent(new CustomEvent("new-word"));
+                    if (this.player.player_data.guessedCorrectly) { 
                         break;
                     }
 
-                    document.dispatchEvent(new CustomEvent("new-word"));
                     document.getElementById("word-text").textContent = data;
                     break;
 

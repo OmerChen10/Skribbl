@@ -7,6 +7,7 @@ from Constants import *
 class Timer():
     def __init__(self):
         self.done = threading.Event()
+        self.abort = threading.Event()
 
     def start(self, seconds):
         """ Starts the timer for the given amount of seconds. """
@@ -15,20 +16,13 @@ class Timer():
             raise ValueError("Input must be positive")
 
         self.done.clear()
-        self.timer_thread = threading.Thread(
-            target=self.sleep, args=(seconds,))
-        
+        self.timer_thread = threading.Timer(seconds, self.done.set)
         self.timer_thread.start()
-
-    def sleep(self, seconds):
-        time.sleep(seconds)
-        self.done.set()
-        self.timer_thread.join(timeout=0.1)
 
     def reset(self):
         """ Resets the timer. """
 
-        self.timer_thread.join(timeout=0.1)
+        self.timer_thread.cancel()
         self.done.clear()
 
     def is_done(self):
