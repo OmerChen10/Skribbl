@@ -38,7 +38,3 @@ class Skribbl():
               "[Skribbl] Game ended." +
               Style.RESET_ALL)
         
-        # Close all threads.
-        for thread in threading.enumerate():
-            if thread != threading.main_thread():
-                thread.join()
