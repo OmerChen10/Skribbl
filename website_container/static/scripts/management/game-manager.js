@@ -68,7 +68,7 @@ export class GameManger {
             document.getElementById("host-wait-screen").style.display = "none";
             document.getElementById("guest-wait-screen").style.display = "none";
 
-            let gameContainer = document.querySelector(".game");
+            let gameContainer = document.getElementById("main-container");
             gameContainer.style.display = "flex";
 
             resolve();
@@ -94,14 +94,21 @@ export class GameManger {
 
     async runRound() {
         return new Promise(async (resolve, reject) => {
+            document.getElementById("leaderboard").style.display = "none";
+            document.getElementById("main-container").style.display = "flex";
+
             console.log("[Game Manager] Starting new round");
             
             await waitForEvents("new-player-role", "new-word");
-            console.log("[Game Manager] Received new word and player role");
 
             document.addEventListener("end-round", () => {
                 console.log("[Game Manager] Round ended");
                 this.canvas.reset();
+                
+                document.addEventListener("leaderboard-update", (e) => {
+                    this.showLeaderboard(e.detail);
+                });
+
                 resolve();
             });
 
@@ -138,5 +145,19 @@ export class GameManger {
             console.log("[Game Manager] Guess correct");
             guessInput.style.display = "none";
         });
+    }
+
+    showLeaderboard(leaderboardUpdate) {
+        document.getElementById("main-container").style.display = "none";
+        document.getElementById("leaderboard").style.display = "flex";
+
+        let playerList = document.getElementById("player-list");
+        playerList.innerHTML = "";
+        
+        for (let playerData of leaderboardUpdate) {
+            let playerElement = document.createElement("li");
+            playerElement.textContent = playerData;
+            playerList.appendChild(playerElement);
+        }
     }
 }

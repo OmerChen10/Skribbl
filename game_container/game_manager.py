@@ -69,6 +69,12 @@ class GameManger(threading.Thread):
 
             print(f"[Game Manager] Round {current_round + 1} ended.")
 
+            # Show the leaderboard.
+            self.network_handler.send_to_all_clients(
+                Headers.LEADERBOARD_UPDATE, self.assemble_leaderboard())    
+            
+            time.sleep(GameConfig.ROUND_INTERVAL)
+
     def send_new_roles(self) -> None:
         """Send each player it's role for the current round."""
 
@@ -144,6 +150,9 @@ class GameManger(threading.Thread):
                         player.send(Headers.GUESS_CORRECT, self.word_selector.current_word)
                         self.correct_guesses += 1
 
+                        player.score += int(GameConfig.BASE_POINTS * self.round_timer.getTimeLeft())
+                        self.drawer.score += GameConfig.POINTS_PER_CORRECT_GUESS
+
     def finish_game(self) -> None:
         """End the game."""
 
@@ -151,4 +160,15 @@ class GameManger(threading.Thread):
             Headers.GAME_STATE, "game-ended")
 
         self.game_ended.set()
+
+    def assemble_leaderboard(self) -> str:
+        """ Assembles the leaderboard. """
+
+        leaderboard = []
+        sorted_clients = sorted(self.network_handler.clients, key=lambda client: client.score, reverse=True)
+
+        for player in sorted_clients[:GameConfig.NUM_PLAYERS_IN_LEADERBOARD]:
+            leaderboard.append(f"{player.name}: {player.score}")
+
+        return leaderboard
         

@@ -3,9 +3,9 @@ import { CanvasPacket } from "../utils.js";
 
 
 export class NetworkHandler{
-    constructor(player){
+    constructor(gameManager){
         this.ws = null;
-        this.player = player;
+        this.gameManager = gameManager;
         this.receivedNewMessage = false;
     }
 
@@ -75,27 +75,27 @@ export class NetworkHandler{
             switch (header) {
                 case NetworkConfig.HEADERS.GAME_STATE:
                     document.dispatchEvent(new CustomEvent(data));
-                    this.player.game.game_state = data;
+                    this.gameManager.game.game_state = data;
                     break;
 
                 case NetworkConfig.HEADERS.IS_HOST:
-                    this.player.player_data.isHost = data;
+                    this.gameManager.player_data.isHost = data;
                     document.dispatchEvent(new CustomEvent("is-host"));
                     break;
 
                 case NetworkConfig.HEADERS.PLAYER_ROLE:
-                    this.player.player_data.isDrawer = data;
-                    this.player.player_data.guessedCorrectly = false;
+                    this.gameManager.player_data.isDrawer = data;
+                    this.gameManager.player_data.guessedCorrectly = false;
                     document.dispatchEvent(new CustomEvent("new-player-role"));
                     break;
 
                 case NetworkConfig.HEADERS.CANVAS_UPDATE:
-                    this.player.canvas.handleUpdate(data);
+                    this.gameManager.canvas.handleUpdate(data);
                     break;
 
                 case NetworkConfig.HEADERS.WORD_UPDATE:
                     document.dispatchEvent(new CustomEvent("new-word"));
-                    if (this.player.player_data.guessedCorrectly) { 
+                    if (this.gameManager.player_data.guessedCorrectly) { 
                         break;
                     }
 
@@ -103,10 +103,14 @@ export class NetworkHandler{
                     break;
 
                 case NetworkConfig.HEADERS.GUESS_CORRECT:
-                    document.dispatchEvent(new CustomEvent("guess-correct"));
                     document.getElementById("word-text").textContent = data;
-                    this.player.player_data.guessedCorrectly = true;
+                    this.gameManager.player_data.guessedCorrectly = true;
+                    document.dispatchEvent(new CustomEvent("guess-correct"));
                     break;
+
+                case NetworkConfig.HEADERS.LEADERBOARD_UPDATE:
+                    document.dispatchEvent(new CustomEvent("leaderboard-update", { detail: data }));
+                    break;  
 
                 default:
                     break;

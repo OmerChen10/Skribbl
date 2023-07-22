@@ -7,7 +7,6 @@ from Constants import *
 class Timer():
     def __init__(self):
         self.done = threading.Event()
-        self.abort = threading.Event()
 
     def start(self, duration):
         """ Starts the timer for the given amount of seconds. """

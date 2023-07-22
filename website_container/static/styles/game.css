@@ -80,7 +80,7 @@ button:hover {
     height: 75vh;
 }
 
-.game {
+#main-container {
     display: flex;
     display: none;
     align-items: center;
@@ -111,3 +111,29 @@ canvas {
     border-radius: 5px;
 }
 
+
+#leaderboard {
+    display: none;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    height: 75vh;
+}
+
+#leaderboard h1 {
+    font-family: Comic Sans MS;
+    text-align: center;
+    color: rgb(16, 70, 95);
+    font-size: 3rem;
+    font-weight: bold;
+    text-decoration: underline;
+}
+
+#leaderboard ol {
+    padding: 0;
+    margin: 0;
+    font-size: 2rem;
+    font-family: Comic Sans MS;
+    color: rgb(16, 70, 95);
+    font-weight: bold;
+}
