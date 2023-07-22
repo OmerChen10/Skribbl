@@ -5,7 +5,7 @@ class GameConfig():
 
     CODE_LENGTH = 4
     ROUND_DURATION = 20 # Seconds
-    ROUND_INTERVAL = 10 # Seconds
+    ROUND_INTERVAL = 5 # Seconds
 
     # Words 
     STARTING_PERCENTAGE = 0.25 # The percentage of the word that is shown at the start of the round.
