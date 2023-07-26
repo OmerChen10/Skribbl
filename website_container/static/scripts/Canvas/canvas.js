@@ -79,6 +79,7 @@ export class Canvas {
     reset() {
         this.disableDrawing();
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        this.canvasImg.src = " ";
     }
 
     getMousePoses() {
