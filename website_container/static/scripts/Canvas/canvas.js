@@ -9,6 +9,7 @@ export class Canvas {
     }
 
     initialize() {
+        this.canvasImg = document.getElementById("canvas-img");
         this.canvas = document.querySelector('canvas');
         this.ctx = this.canvas.getContext('2d');
         this.canvas.width = this.canvas.offsetWidth;
@@ -34,15 +35,11 @@ export class Canvas {
         this.startDrawing = (e) => {
             this.ctx.beginPath();
             this.isDrawing = true;
-
-            this.canvasNet.startDrawing();
         }
 
         this.stopDrawing = (e) => {
             this.ctx.closePath();
             this.isDrawing = false;
-            
-            this.canvasNet.stopDrawing();
         }
 
         // Support for mobile devices
@@ -92,6 +89,7 @@ export class Canvas {
 
     enableDrawing() {
         if (this.isEnabled) return;
+        this.canvasImg.style.display = "none";
         this.isEnabled = true;
         console.log('[Canvas] Drawing enabled');
 
@@ -111,6 +109,7 @@ export class Canvas {
 
     disableDrawing() {
         if (!this.isEnabled) return;
+        this.canvasImg.style.display = "block";
         this.isEnabled = false;
         console.log('[Canvas] Drawing disabled');
 
