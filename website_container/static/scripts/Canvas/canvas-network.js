@@ -15,12 +15,11 @@ export class CanvasNet {
         // Send a new update as a png image
         if (this.duringCooldown) return;
         this.duringCooldown = true;
-
         setTimeout(() => {
+            console.log("[Canvas Net] Sending new update");
+            this.networkHandler.send(NetworkConfig.HEADERS.CANVAS_UPDATE, this.canvas.canvas.toDataURL());
             this.duringCooldown = false;
-        }, CanvasConfig.COOLDOWN);
-
-        this.networkHandler.send(NetworkConfig.HEADERS.CANVAS_UPDATE, this.canvas.canvas.toDataURL());
+        }, CanvasConfig.SENDING_INTERVAL);
     }
 
     handleUpdate(canvasUpdate) {
