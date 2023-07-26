@@ -38,14 +38,7 @@ export class NetworkHandler{
 
     send(header, data){
         if(this.getSocketState()){
-            // Check if the data is a canvas packet
-            if (data instanceof CanvasPacket) {
-                this.ws.send(header + "===" + data.build() + "END");
-                return;
-            }
-
-            // Else send the data as a string
-            this.ws.send(header + "===" + data + "END");
+            this.ws.send(header + "===" + data + "!END");
         }
     }
 
@@ -65,7 +58,7 @@ export class NetworkHandler{
 
     handlePendingRequests(msg){
 
-        let pendingRequests = msg.split("END");
+        let pendingRequests = msg.split("!END");
         for (let i = 0; i < pendingRequests.length - 1; i++) {
             let request = pendingRequests[i].split("===");
             // console.log(request);

@@ -28,7 +28,8 @@ class Skribbl():
         for _ in range(Constants.GameConfig.CODE_LENGTH):
             code += str(random.randint(1, 9))
 
-        return code
+        return "1111"
+        # return code
 
     
     def waitForFinish(self):
