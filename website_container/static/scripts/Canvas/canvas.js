@@ -1,11 +1,11 @@
-import { CanvasNet } from "./canvas-network.js";
+import { CanvasConfig, NetworkConfig } from "../constants.js";
 
 
 export class Canvas {
     constructor(networkHandler) {
         this.initialize();
         this.networkHandler = networkHandler;
-        this.canvasNet = new CanvasNet(this, networkHandler);
+        this.duringCooldown = false;
     }
 
     initialize() {
@@ -23,13 +23,11 @@ export class Canvas {
         
         this.drawing = (e) => {
             if (!this.isDrawing) return;
-            
-            // Send the mouse position relative to the canvas's size
-            this.mousePoses.push([e.offsetX / this.canvas.width, e.offsetY / this.canvas.height]);
+
             this.ctx.lineTo(e.offsetX, e.offsetY);
             this.ctx.stroke();
 
-            this.canvasNet.sendNewUpdate();
+            this.sendNewUpdate();
         }
 
         this.startDrawing = (e) => {
@@ -82,12 +80,6 @@ export class Canvas {
         this.canvasImg.src = " ";
     }
 
-    getMousePoses() {
-        let mousePoses = this.mousePoses;
-        this.mousePoses = [];
-        return mousePoses;
-    }
-
     enableDrawing() {
         if (this.isEnabled) return;
         this.canvasImg.style.display = "none";
@@ -126,8 +118,20 @@ export class Canvas {
         this.canvas.removeEventListener("touchmove", this.touchDrawing);
     }
 
-    handleUpdate(update) {
-        this.canvasNet.handleUpdate(update);
+    sendNewUpdate() {
+        // Send a new update as a png image
+        if (this.duringCooldown) return;
+        this.duringCooldown = true;
+        setTimeout(() => {
+            this.networkHandler.send(NetworkConfig.HEADERS.CANVAS_UPDATE, this.canvas.toDataURL());
+            this.duringCooldown = false;
+        }, CanvasConfig.SENDING_INTERVAL);
+    }
+
+    handleUpdate(canvasUpdate) {
+        // Display the new update
+        let canvasImg = document.getElementById("canvas-img");
+        canvasImg.src = canvasUpdate;
     }
 }
 
