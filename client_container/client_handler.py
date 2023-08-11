@@ -80,7 +80,7 @@ class ClientHandler():
     def send(self, header: int, server_msg):
         """ Sends a message to the client. """
         msg_data = json.dumps({"value": server_msg})
-        msg = f"{header}==={msg_data}!END"
+        msg = f"{header}==={msg_data}"
         self.pending_messages.append(msg)
 
         self.message_sent.wait()
@@ -105,14 +105,11 @@ class ClientHandler():
         }
 
         while True:
-            # Remove the last element, which is an empty string
-            requests = self.receive().split("!END")[:-1]
-            for request in requests:
-                request = request.split("===")
-                header = request[0]
-                data = request[1]
+            request = self.receive().split("===")
+            header = request[0]
+            data = request[1]
 
-                handlers[header](data)
+            handlers[header](data)
 
                 
 
