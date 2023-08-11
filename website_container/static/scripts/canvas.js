@@ -1,4 +1,4 @@
-import { CanvasConfig, NetworkConfig } from "../constants.js";
+import { CanvasConfig, NetworkConfig } from "./constants.js";
 
 
 export class Canvas {
@@ -10,14 +10,15 @@ export class Canvas {
 
     initialize() {
         this.canvasImg = document.getElementById("canvas-img");
-        this.canvas = document.querySelector('canvas');
+        this.canvas = document.getElementById('canvas');
         this.ctx = this.canvas.getContext('2d');
+
         this.canvas.width = this.canvas.offsetWidth;
         this.canvas.height = this.canvas.offsetHeight;
         this.canvasPos = this.canvas.getBoundingClientRect();
+
         this.isDrawing = false;
         this.isEnabled = false;
-        this.mousePoses = [];
 
         this.ctx.lineWidth = 2;
         
@@ -55,7 +56,7 @@ export class Canvas {
         this.touchDrawing = (e) => {
             if (!this.isDrawing) return;
 
-            this.reinitialize();
+            //this.reinitialize();
             // Calculate the position of the touch relative to the canvas
             offsetX = e.touches[0].clientX - this.canvasPos.left;
             offsetY = e.touches[0].clientY - this.canvasPos.top;
@@ -68,7 +69,7 @@ export class Canvas {
     }
 
     reinitialize() {
-        this.canvas.width = this.canvas.offsetWidth;
+        this.canvas.width = this.canvas.offsetWidth; 
         this.canvas.height = this.canvas.offsetHeight;
 
         this.canvasPos = this.canvas.getBoundingClientRect();
@@ -86,7 +87,6 @@ export class Canvas {
         this.isEnabled = true;
         console.log('[Canvas] Drawing enabled');
 
-        this.reinitialize();
         this.isDrawing = false;
 
         // Event listeners for mouse events
@@ -105,8 +105,6 @@ export class Canvas {
         this.canvasImg.style.display = "block";
         this.isEnabled = false;
         console.log('[Canvas] Drawing disabled');
-
-        this.reinitialize();
 
         // Remove all event listeners
         this.canvas.removeEventListener("mousedown", this.startDrawing);

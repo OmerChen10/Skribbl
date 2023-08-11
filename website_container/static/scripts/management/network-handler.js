@@ -59,7 +59,6 @@ export class NetworkHandler{
     handlePendingRequests(msg){
 
         let request = msg.split("===");
-        // console.log(request);
         let header = parseInt(request[0]);
         let data = JSON.parse(request[1]).value;
 
@@ -81,30 +80,29 @@ export class NetworkHandler{
                 break;
 
             case NetworkConfig.HEADERS.CANVAS_UPDATE:
+                console.log(data);
                 this.gameManager.canvas.handleUpdate(data);
                 break;
 
             case NetworkConfig.HEADERS.WORD_UPDATE:
-                document.dispatchEvent(new CustomEvent("new-word"));
-                if (this.gameManager.player_data.guessedCorrectly) { 
-                    break;
-                }
-
-                document.getElementById("word-text").textContent = data;
+                document.dispatchEvent(new CustomEvent("new-word", { detail: data }));
                 break;
 
             case NetworkConfig.HEADERS.GUESS_CORRECT:
-                document.getElementById("word-text").textContent = data;
                 this.gameManager.player_data.guessedCorrectly = true;
-                document.dispatchEvent(new CustomEvent("guess-correct"));
+                document.dispatchEvent(new CustomEvent("guess-correct", { detail: data }));
                 break;
 
             case NetworkConfig.HEADERS.LEADERBOARD_UPDATE:
-                document.dispatchEvent(new CustomEvent("leaderboard-update", { detail: data }));
+                this.gameManager.game.leaderboard = data;
                 break;  
 
-            case NetworkConfig.HEADERS.END_SCREEN:
-                document.dispatchEvent(new CustomEvent("end-screen", { detail: data }));
+            case NetworkConfig.HEADERS.CHANGE_SCREEN:
+                this.gameManager.changeScreen(data);
+                break;
+
+            case NetworkConfig.HEADERS.WINNER_UPDATE:
+                this.gameManager.winner = data;
                 break;
 
             default:

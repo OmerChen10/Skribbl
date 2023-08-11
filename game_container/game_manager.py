@@ -57,11 +57,16 @@ class GameManger(threading.Thread):
 
         for current_round in range(self.num_of_players):
             print(f"[Game Manager] Starting round {current_round + 1}")
-            self.network_handler.send_to_all_clients(
-                Headers.GAME_STATE, "init-round")
 
             self.send_new_roles()  # Send each player it's role.
             self.send_new_word()  # Send the word to all clients.
+
+            self.network_handler.send_to_all_clients(
+                Headers.GAME_STATE, "new-round")
+            
+            self.network_handler.send_to_all_clients(
+                Headers.CHANGE_SCREEN, "game-screen")
+
             self.round_loop()  # Start the round loop.
 
             self.network_handler.send_to_all_clients(
@@ -69,10 +74,13 @@ class GameManger(threading.Thread):
 
             print(f"[Game Manager] Round {current_round + 1} ended.")
 
-            # Send the leaderboard to all clients
-            if (not current_round == self.num_of_players - 1):
+            if (not current_round == self.num_of_players - 1): # If this is not the last round.
+                # Switch to the leaderboard screen.
                 self.network_handler.send_to_all_clients(
-                    Headers.LEADERBOARD_UPDATE, self.assemble_leaderboard())    
+                    Headers.LEADERBOARD_UPDATE, self.assemble_leaderboard())
+                
+                self.network_handler.send_to_all_clients(
+                    Headers.CHANGE_SCREEN, "leaderboard")  
 
                 time.sleep(GameConfig.ROUND_INTERVAL)
 
@@ -156,15 +164,17 @@ class GameManger(threading.Thread):
 
     def finish_game(self) -> None:
         """End the game."""
-
-        self.network_handler.send_to_all_clients(
-            Headers.GAME_STATE, "game-ended")
-
         
         winner = max(self.network_handler.clients, key=lambda client: client.score)
         self.network_handler.send_to_all_clients(
-            Headers.END_SCREEN, {"name": winner.name, "score": winner.score})
+            Headers.WINNER_UPDATE, {"name": winner.name, "score": winner.score})
 
+        self.network_handler.send_to_all_clients(
+            Headers.CHANGE_SCREEN, "end-screen")
+        
+        self.network_handler.send_to_all_clients(
+            Headers.GAME_STATE, "game-ended")
+        
         self.game_ended.set()
 
     def assemble_leaderboard(self) -> str:
