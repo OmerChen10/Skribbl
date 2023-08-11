@@ -102,7 +102,7 @@ export class NetworkHandler{
                 break;
 
             case NetworkConfig.HEADERS.WINNER_UPDATE:
-                this.gameManager.winner = data;
+                this.gameManager.game.winner = data;
                 break;
 
             default:

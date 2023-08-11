@@ -172,13 +172,13 @@ export class GameManger {
         });
     }
 
-    showLeaderboard(leaderboardUpdate) {
+    showLeaderboard() {
         document.getElementById("leaderboard").style.display = "flex";
 
         let playerList = document.getElementById("player-list");
         playerList.innerHTML = "";
         
-        for (let playerData of leaderboardUpdate) {
+        for (let playerData of this.game.leaderboard) {
             let playerElement = document.createElement("li");
             playerElement.textContent = playerData;
             playerList.appendChild(playerElement);
@@ -186,11 +186,11 @@ export class GameManger {
  
     }
 
-    showEndScreen(winner) {
+    showEndScreen() {
         document.getElementById("end-screen").style.display = "flex";
 
         let winnerText = document.getElementById("winner-text");
-        winnerText.textContent = "THE WINNER IS: " + winner.name + "!" + 
-                                 "\nWITH A SCORE OF: " + winner.score + " POINTS!";
+        winnerText.textContent = "THE WINNER IS: " + this.game.winner.name + "!" + 
+                                 "\nWITH A SCORE OF: " + this.game.winner.score + " POINTS!";
     }
 }
