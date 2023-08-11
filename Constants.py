@@ -33,6 +33,7 @@ class Headers():
     GUESS = 6
     GUESS_CORRECT = 7
     LEADERBOARD_UPDATE = 8
-    END_SCREEN = 9
+    CHANGE_SCREEN = 9
+    WINNER_UPDATE = 10
 
     

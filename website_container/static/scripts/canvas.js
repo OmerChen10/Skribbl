@@ -1,35 +1,34 @@
-import { CanvasNet } from "./canvas-network.js";
+import { CanvasConfig, NetworkConfig } from "./constants.js";
 
 
 export class Canvas {
     constructor(networkHandler) {
         this.initialize();
         this.networkHandler = networkHandler;
-        this.canvasNet = new CanvasNet(this, networkHandler);
+        this.duringCooldown = false;
     }
 
     initialize() {
         this.canvasImg = document.getElementById("canvas-img");
-        this.canvas = document.querySelector('canvas');
+        this.canvas = document.getElementById('canvas');
         this.ctx = this.canvas.getContext('2d');
+
         this.canvas.width = this.canvas.offsetWidth;
         this.canvas.height = this.canvas.offsetHeight;
         this.canvasPos = this.canvas.getBoundingClientRect();
+
         this.isDrawing = false;
         this.isEnabled = false;
-        this.mousePoses = [];
 
         this.ctx.lineWidth = 2;
         
         this.drawing = (e) => {
             if (!this.isDrawing) return;
-            
-            // Send the mouse position relative to the canvas's size
-            this.mousePoses.push([e.offsetX / this.canvas.width, e.offsetY / this.canvas.height]);
+
             this.ctx.lineTo(e.offsetX, e.offsetY);
             this.ctx.stroke();
 
-            this.canvasNet.sendNewUpdate();
+            this.sendNewUpdate();
         }
 
         this.startDrawing = (e) => {
@@ -57,7 +56,7 @@ export class Canvas {
         this.touchDrawing = (e) => {
             if (!this.isDrawing) return;
 
-            this.reinitialize();
+            //this.reinitialize();
             // Calculate the position of the touch relative to the canvas
             offsetX = e.touches[0].clientX - this.canvasPos.left;
             offsetY = e.touches[0].clientY - this.canvasPos.top;
@@ -70,7 +69,7 @@ export class Canvas {
     }
 
     reinitialize() {
-        this.canvas.width = this.canvas.offsetWidth;
+        this.canvas.width = this.canvas.offsetWidth; 
         this.canvas.height = this.canvas.offsetHeight;
 
         this.canvasPos = this.canvas.getBoundingClientRect();
@@ -82,19 +81,12 @@ export class Canvas {
         this.canvasImg.src = " ";
     }
 
-    getMousePoses() {
-        let mousePoses = this.mousePoses;
-        this.mousePoses = [];
-        return mousePoses;
-    }
-
     enableDrawing() {
         if (this.isEnabled) return;
         this.canvasImg.style.display = "none";
         this.isEnabled = true;
         console.log('[Canvas] Drawing enabled');
 
-        this.reinitialize();
         this.isDrawing = false;
 
         // Event listeners for mouse events
@@ -114,8 +106,6 @@ export class Canvas {
         this.isEnabled = false;
         console.log('[Canvas] Drawing disabled');
 
-        this.reinitialize();
-
         // Remove all event listeners
         this.canvas.removeEventListener("mousedown", this.startDrawing);
         this.canvas.removeEventListener("mouseup", this.stopDrawing);
@@ -126,8 +116,20 @@ export class Canvas {
         this.canvas.removeEventListener("touchmove", this.touchDrawing);
     }
 
-    handleUpdate(update) {
-        this.canvasNet.handleUpdate(update);
+    sendNewUpdate() {
+        // Send a new update as a png image
+        if (this.duringCooldown) return;
+        this.duringCooldown = true;
+        setTimeout(() => {
+            this.networkHandler.send(NetworkConfig.HEADERS.CANVAS_UPDATE, this.canvas.toDataURL());
+            this.duringCooldown = false;
+        }, CanvasConfig.SENDING_INTERVAL);
+    }
+
+    handleUpdate(canvasUpdate) {
+        // Display the new update
+        let canvasImg = document.getElementById("canvas-img");
+        canvasImg.src = canvasUpdate;
     }
 }
 

@@ -12,7 +12,7 @@ h1{
     
 }
 
-.username {
+#username {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -80,8 +80,7 @@ button:hover {
     height: 75vh;
 }
 
-#main-container {
-    display: flex;
+#game-screen {
     display: none;
     align-items: center;
     justify-content: center;
@@ -90,7 +89,7 @@ button:hover {
     width: 100%;
 }
 
-.guess {
+#guess-input {
     padding-top: 15px;
     gap: 10px;
     display: flex;
@@ -101,7 +100,7 @@ button:hover {
 
 }
 
-canvas {
+#canvas {
     width: 95vw;
     aspect-ratio: 1/1;
     max-width: 700px; 

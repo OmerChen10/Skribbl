@@ -10,7 +10,7 @@
     
 </head>
 <body>
-    <div class="username"> 
+    <div id="username" class="screen"> 
         <h1>Enter your Username</h1>
         <div id="username-input">
             <input type="text" id="username-text" placeholder="Username">
@@ -18,7 +18,7 @@
         </div>
     </div>
 
-    <div class="wait-screen">
+    <div id="wait-screen" class="screen">
         <div id="host-wait-screen">
             <h1>Press the button to start</h1>
             <button id="start-game-button">Start</button>
@@ -28,20 +28,20 @@
         </div>
     </div>
 
-    <div id="main-container">
+    <div id="game-screen" class="screen">
         <h1 id="word-text">Skribbl</h1>
         <div id="canvas-container">
             <canvas id="canvas"></canvas>
             <img id="canvas-img" alt="">
         </div>
 
-        <div class="guess">
+        <div id="guess-input">
             <input type="text" id="word-input" placeholder="Enter your guess">
             <button id="word-submit-button">Send</button>
         </div>
     </div>
 
-    <div id="leaderboard">
+    <div id="leaderboard" class="screen">
         <h1>Leaderboard</h1>
         <div id="leaderboard-list">
             <ol id="player-list">

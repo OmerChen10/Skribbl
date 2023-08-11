@@ -38,7 +38,7 @@ export class NetworkHandler{
 
     send(header, data){
         if(this.getSocketState()){
-            this.ws.send(header + "===" + data + "!END");
+            this.ws.send(header + "===" + data);
         }
     }
 
@@ -58,62 +58,56 @@ export class NetworkHandler{
 
     handlePendingRequests(msg){
 
-        let pendingRequests = msg.split("!END");
-        for (let i = 0; i < pendingRequests.length - 1; i++) {
-            let request = pendingRequests[i].split("===");
-            // console.log(request);
-            let header = parseInt(request[0]);
-            let data = JSON.parse(request[1]).value;
+        let request = msg.split("===");
+        let header = parseInt(request[0]);
+        let data = JSON.parse(request[1]).value;
 
-            switch (header) {
-                case NetworkConfig.HEADERS.GAME_STATE:
-                    document.dispatchEvent(new CustomEvent(data));
-                    this.gameManager.game.game_state = data;
-                    break;
+        switch (header) {
+            case NetworkConfig.HEADERS.GAME_STATE:
+                document.dispatchEvent(new CustomEvent(data));
+                this.gameManager.game.game_state = data;
+                break;
 
-                case NetworkConfig.HEADERS.IS_HOST:
-                    this.gameManager.player_data.isHost = data;
-                    document.dispatchEvent(new CustomEvent("is-host"));
-                    break;
+            case NetworkConfig.HEADERS.IS_HOST:
+                this.gameManager.player_data.isHost = data;
+                document.dispatchEvent(new CustomEvent("is-host"));
+                break;
 
-                case NetworkConfig.HEADERS.PLAYER_ROLE:
-                    this.gameManager.player_data.isDrawer = data;
-                    this.gameManager.player_data.guessedCorrectly = false;
-                    document.dispatchEvent(new CustomEvent("new-player-role"));
-                    break;
+            case NetworkConfig.HEADERS.PLAYER_ROLE:
+                this.gameManager.player_data.isDrawer = data;
+                this.gameManager.player_data.guessedCorrectly = false;
+                document.dispatchEvent(new CustomEvent("new-player-role"));
+                break;
 
-                case NetworkConfig.HEADERS.CANVAS_UPDATE:
-                    this.gameManager.canvas.handleUpdate(data);
-                    break;
+            case NetworkConfig.HEADERS.CANVAS_UPDATE:
+                console.log(data);
+                this.gameManager.canvas.handleUpdate(data);
+                break;
 
-                case NetworkConfig.HEADERS.WORD_UPDATE:
-                    document.dispatchEvent(new CustomEvent("new-word"));
-                    if (this.gameManager.player_data.guessedCorrectly) { 
-                        break;
-                    }
+            case NetworkConfig.HEADERS.WORD_UPDATE:
+                document.dispatchEvent(new CustomEvent("new-word", { detail: data }));
+                break;
 
-                    document.getElementById("word-text").textContent = data;
-                    break;
+            case NetworkConfig.HEADERS.GUESS_CORRECT:
+                this.gameManager.player_data.guessedCorrectly = true;
+                document.dispatchEvent(new CustomEvent("guess-correct", { detail: data }));
+                break;
 
-                case NetworkConfig.HEADERS.GUESS_CORRECT:
-                    document.getElementById("word-text").textContent = data;
-                    this.gameManager.player_data.guessedCorrectly = true;
-                    document.dispatchEvent(new CustomEvent("guess-correct"));
-                    break;
+            case NetworkConfig.HEADERS.LEADERBOARD_UPDATE:
+                this.gameManager.game.leaderboard = data;
+                break;  
 
-                case NetworkConfig.HEADERS.LEADERBOARD_UPDATE:
-                    document.dispatchEvent(new CustomEvent("leaderboard-update", { detail: data }));
-                    break;  
+            case NetworkConfig.HEADERS.CHANGE_SCREEN:
+                this.gameManager.changeScreen(data);
+                break;
 
-                case NetworkConfig.HEADERS.END_SCREEN:
-                    document.dispatchEvent(new CustomEvent("end-screen", { detail: data }));
-                    break;
+            case NetworkConfig.HEADERS.WINNER_UPDATE:
+                this.gameManager.game.winner = data;
+                break;
 
-                default:
-                    break;
-            }
+            default:
+                break;
         }
-
     }
 }
 
