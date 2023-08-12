@@ -1,4 +1,7 @@
-import websockets, asyncio, threading, json
+import websockets
+import asyncio
+import threading
+import json
 from client_container.client_handler import ClientHandler
 from colorama import Fore, Style
 from Constants import *
@@ -20,9 +23,10 @@ class NetworkHandler(threading.Thread):
 
         print("[Client Handler] Starting network handler")
 
+        # Create a new event loop
         asyncio.set_event_loop(asyncio.new_event_loop())
         self.loop = asyncio.get_event_loop()
-        self.loop.run_until_complete(self.start_server())
+        self.loop.run_until_complete(self.start_server())  # Start the server
         self.loop.run_forever()
 
     async def start_server(self):
@@ -39,13 +43,15 @@ class NetworkHandler(threading.Thread):
                     return
 
         self.num_clients += 1
+        # Create a new client handler
         new_client = ClientHandler(websocket, self.num_clients)
+        # Add the client to the list of clients
         self.clients.append(new_client)
 
-        if (self.num_clients == 1): 
-            self.host = new_client
+        if (self.num_clients == 1):
+            self.host = new_client  # Set the host to be the first client
 
-        await new_client.start_update_loop()
+        await new_client.start_update_loop()  # Start the client's update loop
 
     def send_to_all_clients(self, header: int, server_msg) -> None:
         """ Sends a message to all clients. """
@@ -78,7 +84,7 @@ class NetworkHandler(threading.Thread):
         self.loop.stop()
 
         print(Fore.RED + Style.BRIGHT +
-              "[Network Handler] Network handler stopped." + 
+              "[Network Handler] Network handler stopped." +
               Style.RESET_ALL)
-        
+
         super().join()

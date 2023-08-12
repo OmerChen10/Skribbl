@@ -1,4 +1,7 @@
-import threading, json, asyncio, websockets
+import threading
+import json
+import asyncio
+import websockets
 from Constants import Headers
 
 
@@ -26,39 +29,31 @@ class ClientHandler():
         self.thread = threading.Thread(target=self.initialize_client)
         self.thread.start()
 
-
     async def start_update_loop(self):
         """ Start the receiving and sending loops. """
 
+        # Start the receiving and sending loops.
         await asyncio.gather(self.start_receiving_loop(), self.start_sending_loop())
 
     async def start_sending_loop(self):
 
         while True:
-            for pending_message in self.pending_messages:
+            for pending_message in self.pending_messages:  # Send all pending messages.
                 await self.socket.send(pending_message)
+                # Remove the message from the list of pending messages.
                 self.pending_messages.remove(pending_message)
-                self.message_sent.set()
+                self.message_sent.set()  # Set the message sent event.
 
             await asyncio.sleep(0.1)
 
     async def start_receiving_loop(self) -> dict:
 
         while True:
-            client_update = await self.socket.recv()
-            self.received_messages.append(client_update)
+            client_update = await self.socket.recv() # Receive a message from the client.
+            self.received_messages.append(client_update) # Add the message to the list of received messages.
 
-            self.received_new_message.set()
+            self.received_new_message.set() # Set the received new message event.
             await asyncio.sleep(0.1)
-
-    def received_new_update(self) -> bool:
-        """ Check if the player has received a new message. """
-
-        if (self.received_new_message):
-            self.received_new_message = False
-            return True
-
-        return False
 
     def receive(self):
         """ Returns the last received message. """
@@ -66,24 +61,26 @@ class ClientHandler():
         if (self.received_messages != []):
             return self.received_messages.pop(0)
 
-        self.received_new_message.wait()
+        self.received_new_message.wait() # Wait for a new message.
         self.received_new_message.clear()
 
         try:
             msg = self.received_messages.pop(0)
             return msg
-        
+
         except Exception as e:
             print(f"[Client Handler] Error receiving message: {e}")
             return ""
 
     def send(self, header: int, server_msg):
         """ Sends a message to the client. """
-        msg_data = json.dumps({"value": server_msg})
-        msg = f"{header}==={msg_data}"
-        self.pending_messages.append(msg)
 
-        self.message_sent.wait()
+        # Create the message. (Using json to serialize the data).
+        msg_data = json.dumps({"value": server_msg}) 
+        msg = f"{header}==={msg_data}" # Add the header to the message.
+        self.pending_messages.append(msg) # Add the message to the list of pending messages.
+
+        self.message_sent.wait() # Wait for the message to be sent.
         self.message_sent.clear()
 
     def initialize_client(self) -> None:
@@ -92,12 +89,13 @@ class ClientHandler():
         self.name = self.receive()
         print(f"[Client Handler] Client {self.id} has connected with name {self.name}.")
 
-        self.send(Headers.IS_HOST, (self.id == 1))
-        self.handle_requests()
+        self.send(Headers.IS_HOST, (self.id == 1)) # Send whether the client is the host.
+        self.handle_requests() # Start handling the client's requests.
 
     def handle_requests(self) -> None:
         """ Handles the client's requests. """
 
+        # A dictionary of handlers for each header.
         handlers = {
             str(Headers.GAME_STATE): self.handle_game_state,
             str(Headers.CANVAS_UPDATE): self.handle_canvas_update,
@@ -105,17 +103,16 @@ class ClientHandler():
         }
 
         while True:
-            request = self.receive().split("===")
+            # Analyze the request.
+            request = self.receive().split("===") 
             header = request[0]
             data = request[1]
 
             handlers[header](data)
 
-                
-
     def handle_new_guess(self, data: str) -> None:
         """ Handles the client's guess. """
-
+        
         self.new_guess.set()
         self.guess = data
 
@@ -127,7 +124,7 @@ class ClientHandler():
 
     def handle_game_state(self, data: str) -> None:
         """ Handles the client's game state request. """
-  
+
         if (data == "host-ready"):
             self.ready.set()
 
@@ -143,7 +140,7 @@ class ClientHandler():
         self.canvas_update.clear()
 
         return self.canvas_image
-    
+
     async def close(self) -> None:
         """ Closes the client. """
 

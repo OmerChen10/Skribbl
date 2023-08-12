@@ -21,29 +21,30 @@ class WebsiteServer(threading.Thread):
 
 
         ROOT = os.path.dirname((__file__))
-        self.app = flask.Flask(__name__,
+        # Set up the template & static folder's path
+        self.app = flask.Flask(__name__, 
                                template_folder=os.path.join(ROOT, "pages"),
                                static_folder=os.path.join(ROOT, "static"))
 
-        logging.getLogger('werkzeug').disabled = True
+        logging.getLogger('werkzeug').disabled = True # Disable flask's logging
 
-        @self.app.route('/')
+        @self.app.route('/') # The index page
         def index():
             return flask.render_template('index.html')
 
-        @self.app.errorhandler(404)
+        @self.app.errorhandler(404) # The 404 page
         def page_not_found(e):
             return flask.render_template('game_not_found.html'), 404
 
-        self.start()
+        self.start() # Start the thread
     
 
     @staticmethod
-    def get_instance():
+    def get_instance(): 
         """ Returns the instance of the WebsiteServer. """
         
-        if (WebsiteServer.__instance is None):
-            WebsiteServer()
+        if (WebsiteServer.__instance is None): 
+            WebsiteServer() # Create a new instance if it doesn't exist
             
         return WebsiteServer.__instance
     
@@ -55,7 +56,7 @@ class WebsiteServer(threading.Thread):
     def add_game_code(self, game_code: str) -> None:
         """ Adds a game code to the website. """
         
-        endpoint = f'game_{game_code}'
+        endpoint = f'game_{game_code}' # The endpoint for the game
         self.app.add_url_rule(f'/{game_code}', endpoint, self.get_html)
         
 
@@ -65,7 +66,8 @@ class WebsiteServer(threading.Thread):
         print("[Website] Starting website server")
 
         self.app.run(host='0.0.0.0',
-                     port=Constants.NetworkConfig.WEBSITE_PORT, debug=False)
+                     port=Constants.NetworkConfig.WEBSITE_PORT, 
+                     debug=False)
 
 
 if __name__ == '__main__':
