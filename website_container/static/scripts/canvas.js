@@ -24,11 +24,12 @@ export class Canvas {
         
         this.drawing = (e) => {
             if (!this.isDrawing) return;
-
+            
+            // Draw a line from the previous position to the current position
             this.ctx.lineTo(e.offsetX, e.offsetY);
             this.ctx.stroke();
 
-            this.sendNewUpdate();
+            this.sendNewUpdate(); // Send a new update to the server
         }
 
         this.startDrawing = (e) => {
@@ -83,7 +84,7 @@ export class Canvas {
 
     enableDrawing() {
         if (this.isEnabled) return;
-        this.canvasImg.style.display = "none";
+        this.canvasImg.style.display = "none"; // Hide the image (needed only for guessers)
         this.isEnabled = true;
         console.log('[Canvas] Drawing enabled');
 
@@ -102,7 +103,7 @@ export class Canvas {
 
     disableDrawing() {
         if (!this.isEnabled) return;
-        this.canvasImg.style.display = "block";
+        this.canvasImg.style.display = "block"; // Show the image (needed only for guessers)
         this.isEnabled = false;
         console.log('[Canvas] Drawing disabled');
 
@@ -123,7 +124,7 @@ export class Canvas {
         setTimeout(() => {
             this.networkHandler.send(NetworkConfig.HEADERS.CANVAS_UPDATE, this.canvas.toDataURL());
             this.duringCooldown = false;
-        }, CanvasConfig.SENDING_INTERVAL);
+        }, CanvasConfig.SENDING_INTERVAL); // Send the updates with an interval
     }
 
     handleUpdate(canvasUpdate) {

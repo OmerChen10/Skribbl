@@ -22,18 +22,18 @@ export class GameManger {
     async initiatePlayer() {
         // This function checks if the user is the host of the game.
         return new Promise(async (resolve, reject) => {
-            await this.networkHandler.connectToGameServer();
+            await this.networkHandler.connectToGameServer(); // Connect to the game server
 
-            var username = document.getElementById('username-text').value;
+            var username = document.getElementById('username-text').value; // Get the username from the input field
             if (username == '') {
                 alert('Please enter a username');
                 return;
             }
 
             this.player_data.username = username;
-            this.networkHandler.sendRaw(username);
-            await waitForEvents("is-host");
-            await this.showWaitScreen();
+            this.networkHandler.sendRaw(username); // Send the username to the server
+            await waitForEvents("is-host"); // Wait for the server to respond with the host status
+            await this.showWaitScreen(); // Show the wait screen
             resolve();
         });
     }
@@ -55,8 +55,8 @@ export class GameManger {
             });
 
             while (true) {
-                await waitForEvents("new-round");
-                await this.runRound();
+                await waitForEvents("new-round"); // Wait for the server to start a new round
+                await this.runRound(); // Run the round
             }
         });
     }
@@ -68,10 +68,11 @@ export class GameManger {
 
             document.addEventListener("end-round", () => {
                 console.log("[Game Manager] Round ended");
-                this.canvas.reset();
+                this.canvas.reset(); // Reset the canvas
                 resolve();
             });
-
+            
+            // Run the appropriate loop
             if (this.player_data.isDrawer) {
                 this.startDrawerLoop();
             }
@@ -83,40 +84,42 @@ export class GameManger {
 
     startDrawerLoop() {
         this.canvas.enableDrawing();
-        let duringCooldown = false;
-        document.getElementById("guess-input").style.display = "none";
+        document.getElementById("guess-input").style.display = "none"; // Hide the guess input (needed only for guessers)
     }
 
     startGuesserLoop() {
         this.canvas.disableDrawing();
-        this.canvas.reinitialize();
+        this.canvas.reinitialize(); // Reinitialize the canvas
 
-        document.getElementById("guess-input").style.display = "flex";
+        document.getElementById("guess-input").style.display = "flex"; // Show the guess input (needed only for guessers)
 
         document.getElementById("word-submit-button").addEventListener("click", () => {
-            let guess = document.getElementById("word-input").value;
+            let guess = document.getElementById("word-input").value; // Get the guess from the input
             this.networkHandler.send(NetworkConfig.HEADERS.GUESS, guess); // Send the guess to the server
             // Clear the input
-            document.getElementById("word-input").value = "";
+            document.getElementById("word-input").value = ""; 
         });
 
         document.addEventListener("guess-correct", (e) => {
             console.log("[Game Manager] Guess correct");
-            document.getElementById("guess-input").style.display = "none";
-            document.getElementById("word-text").textContent = e.detail;
+            document.getElementById("guess-input").style.display = "none"; // Hide the guess input (not needed anymore)
+            document.getElementById("word-text").textContent = e.detail; // Display the full word
         });
     }
 
     changeScreen(screen) {
-        let screens = document.querySelectorAll(".screen");
+
+        // Hide all the screens
+        let screens = document.querySelectorAll(".screen"); 
         for (let screenElement of screens) {
             screenElement.style.display = "none";
         }
 
+        // Show the requested screen
         switch (screen) {
             case "game-screen":
-                document.getElementById("game-screen").style.display = "flex";
-                this.canvas.reinitialize();
+                this.showGameScreen();
+                this.canvas.reinitialize(); // Reinitialize the canvas
                 break;
 
             case "leaderboard":
@@ -140,8 +143,8 @@ export class GameManger {
             let guestWaitScreen = document.getElementById("guest-wait-screen");
             let startGameButton = document.getElementById("start-game-button");
 
-            usernameContainer.style.display = "none";
-            if (this.player_data.isHost) {
+            usernameContainer.style.display = "none"; // Hide the username container
+            if (this.player_data.isHost) { // Show the appropriate wait screen
                 hostWaitScreen.style.display = "flex";
 
                 startGameButton.addEventListener("click", () => {
@@ -153,7 +156,7 @@ export class GameManger {
                 guestWaitScreen.style.display = "flex";
             }
             
-            await waitForEvents("game-started");
+            await waitForEvents("game-started"); // Wait for the server to start the game
             resolve();
         });
     }
@@ -161,9 +164,6 @@ export class GameManger {
     showGameScreen() {
         return new Promise((resolve, reject) => {
             console.log("[Game Manager] Starting the game");
-
-            document.getElementById("host-wait-screen").style.display = "none";
-            document.getElementById("guest-wait-screen").style.display = "none";
 
             let gameContainer = document.getElementById("game-screen");
             gameContainer.style.display = "flex";
@@ -178,7 +178,7 @@ export class GameManger {
         let playerList = document.getElementById("player-list");
         playerList.innerHTML = "";
         
-        for (let playerData of this.game.leaderboard) {
+        for (let playerData of this.game.leaderboard) { // Add all the players to the leaderboard 
             let playerElement = document.createElement("li");
             playerElement.textContent = playerData;
             playerList.appendChild(playerElement);
@@ -189,7 +189,7 @@ export class GameManger {
     showEndScreen() {
         document.getElementById("end-screen").style.display = "flex";
 
-        let winnerText = document.getElementById("winner-text");
+        let winnerText = document.getElementById("winner-text"); // Display the winner text
         winnerText.textContent = "THE WINNER IS: " + this.game.winner.name + "!" + 
                                  "\nWITH A SCORE OF: " + this.game.winner.score + " POINTS!";
     }

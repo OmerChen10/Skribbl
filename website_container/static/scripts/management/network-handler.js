@@ -1,5 +1,4 @@
 import { NetworkConfig } from "../constants.js";
-import { CanvasPacket } from "../utils.js";
 
 
 export class NetworkHandler{
@@ -11,8 +10,9 @@ export class NetworkHandler{
 
     connectToGameServer(){
         return new Promise((resolve, reject) => {
-            const gameCode = location.pathname.replace('/', '');
-            const ip = location.hostname;
+            // Assemble the ip and port for connecting to the server
+            const gameCode = location.pathname.replace('/', ''); // The game code is the port number of the server
+            const ip = location.hostname; 
             this.ws = new WebSocket('ws://' + ip + ':' + gameCode); // Connect to server
 
             this.ws.onopen = function (event) {
@@ -26,7 +26,7 @@ export class NetworkHandler{
 
             this.ws.onmessage = function (event) {
                 this.receivedNewMessage = true;
-                this.handlePendingRequests(event.data);
+                this.handlePendingRequests(event.data); // Handle the pending requests
             }.bind(this);
         });
     }
@@ -58,12 +58,13 @@ export class NetworkHandler{
 
     handlePendingRequests(msg){
 
-        let request = msg.split("===");
+        let request = msg.split("==="); // Split the message into header and data
         let header = parseInt(request[0]);
         let data = JSON.parse(request[1]).value;
 
         switch (header) {
             case NetworkConfig.HEADERS.GAME_STATE:
+                // Dispatch a new event with the game state
                 document.dispatchEvent(new CustomEvent(data));
                 this.gameManager.game.game_state = data;
                 break;
@@ -74,13 +75,13 @@ export class NetworkHandler{
                 break;
 
             case NetworkConfig.HEADERS.PLAYER_ROLE:
+                // Update the player role
                 this.gameManager.player_data.isDrawer = data;
                 this.gameManager.player_data.guessedCorrectly = false;
                 document.dispatchEvent(new CustomEvent("new-player-role"));
                 break;
 
             case NetworkConfig.HEADERS.CANVAS_UPDATE:
-                console.log(data);
                 this.gameManager.canvas.handleUpdate(data);
                 break;
 
@@ -98,6 +99,7 @@ export class NetworkHandler{
                 break;  
 
             case NetworkConfig.HEADERS.CHANGE_SCREEN:
+                // Call the change screen function with the requested screen
                 this.gameManager.changeScreen(data);
                 break;
 

@@ -6,7 +6,7 @@ joinButton.addEventListener("click", main);
     
 
 async function main(){
-    var gameManager = new GameManger();
-    await gameManager.initiatePlayer();
-    await gameManager.initGame();
-}
+    var gameManager = new GameManger(); // Create a new game manager
+    await gameManager.initiatePlayer(); // Initiate the player
+    await gameManager.initGame(); // Initiate the game
+} 
