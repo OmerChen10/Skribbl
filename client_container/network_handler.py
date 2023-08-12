@@ -82,15 +82,3 @@ class NetworkHandler(threading.Thread):
               Style.RESET_ALL)
         
         super().join()
-
-    
-
-
-
-
-
-
-
-
-
-    
