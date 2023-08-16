@@ -66,8 +66,33 @@ export class Canvas {
             this.ctx.stroke();
         }
 
+        // 
+
         console.log("[Canvas] Canvas initialized");
     }
+
+    setupButtons() {
+        // Setup the buttons
+        document.getElementById("red-color").addEventListener("click", () => {
+            this.ctx.strokeStyle = "red";
+        });
+        document.getElementById("blue-color").addEventListener("click", () => {
+            this.ctx.strokeStyle = "blue";
+        });
+        document.getElementById("green-color").addEventListener("click", () => {
+            this.ctx.strokeStyle = "green";
+        });
+        document.getElementById("yellow-color").addEventListener("click", () => {
+            this.ctx.strokeStyle = "yellow";
+        });
+        document.getElementById("black-color").addEventListener("click", () => {
+            this.ctx.strokeStyle = "black";
+        });
+        document.getElementById("custom-color").addEventListener("click", () => {
+            // Create a color picker
+            let colorPicker = document.createElement("input");
+            colorPicker.type = "color";
+
 
     reinitialize() {
         this.canvas.width = this.canvas.offsetWidth; 
