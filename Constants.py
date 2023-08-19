@@ -4,7 +4,7 @@ import os
 class GameConfig():
 
     CODE_LENGTH = 4
-    ROUND_DURATION = 20 # Seconds
+    ROUND_DURATION = 30 # Seconds
     ROUND_INTERVAL = 5 # Seconds
 
     # Words 

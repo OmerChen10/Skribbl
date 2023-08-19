@@ -13,7 +13,7 @@ h1{
 }
 
 #username {
-    display: none;
+    display: flex;
     align-items: center;
     justify-content: center;
     min-height: 50vh;
@@ -82,7 +82,7 @@ button:hover {
 }
 
 #game-screen {
-    display: flex;
+    display: none;
     align-items: center;
     justify-content: center;
     flex-direction: column;
@@ -178,7 +178,7 @@ button:hover {
     background-color: white;
     border-radius: 5px;
 
-    display: flex;
+    display: none;
     flex-direction: row;
 }
 
@@ -226,7 +226,7 @@ button:hover {
     border-radius: 50%;
     outline: none;
     background-color: white;
-    background-image: url('../images/earaser.png');
+    background-image: url('../images/eraser.png');
     background-size: 80%;
     background-repeat: no-repeat;
     background-position: center;
@@ -242,16 +242,4 @@ button:hover {
     background-size: 80%;
     background-repeat: no-repeat;
     background-position: center;
-}
-
-#back-button {
-    width: 5vh;
-    height: 5vh;
-    border-radius: 50%;
-    outline: none;
-    background-color: white;
-    background-image: url('../images/back-arrow.png');
-    background-size: 85%;
-    background-repeat: no-repeat;
-    background-position: top;
 }
