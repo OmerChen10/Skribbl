@@ -10,6 +10,8 @@ export class Canvas {
 
     initialize() {
         this.canvasImg = document.getElementById("canvas-img");
+        this.toolBar = document.getElementById("canvas-tools");
+        this.canvasImg = document.getElementById("canvas-img");
         this.canvas = document.getElementById('canvas');
         this.ctx = this.canvas.getContext('2d');
 
@@ -66,8 +68,50 @@ export class Canvas {
             this.ctx.stroke();
         }
 
+        // Setup the buttons
+        this.setupButtons();
+
         console.log("[Canvas] Canvas initialized");
     }
+
+    setupButtons() {
+        // Setup the buttons
+        document.getElementById("red-color").addEventListener("click", () => {
+            this.ctx.strokeStyle = "red";
+            this.ctx.lineWidth = 2;
+        });
+        document.getElementById("blue-color").addEventListener("click", () => {
+            this.ctx.strokeStyle = "blue";
+            this.ctx.lineWidth = 2;
+        });
+        document.getElementById("green-color").addEventListener("click", () => {
+            this.ctx.strokeStyle = "green";
+            this.ctx.lineWidth = 2;
+        });
+        document.getElementById("yellow-color").addEventListener("click", () => {
+            this.ctx.strokeStyle = "yellow";
+            this.ctx.lineWidth = 2;
+        });
+        document.getElementById("black-color").addEventListener("click", () => {
+            this.ctx.strokeStyle = "black";
+            this.ctx.lineWidth = 2;
+        });
+        document.getElementById("custom-color").addEventListener("change", () => {
+            let colorPicker = document.getElementById("custom-color");
+            this.ctx.strokeStyle = colorPicker.value;
+            this.ctx.lineWidth = 2;
+        });
+        document.getElementById("eraser").addEventListener("click", () => {
+            this.ctx.strokeStyle = "white";
+            this.ctx.lineWidth = 25;
+        });
+
+        document.getElementById("clear-canvas").addEventListener("click", () => {
+            this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+            this.sendNewUpdate();
+        });
+    }
+
 
     reinitialize() {
         this.canvas.width = this.canvas.offsetWidth; 
@@ -85,6 +129,8 @@ export class Canvas {
     enableDrawing() {
         if (this.isEnabled) return;
         this.canvasImg.style.display = "none"; // Hide the image (needed only for guessers)
+        this.toolBar.style.display = "flex"; // Show the toolbar
+
         this.isEnabled = true;
         console.log('[Canvas] Drawing enabled');
 
@@ -104,6 +150,7 @@ export class Canvas {
     disableDrawing() {
         if (!this.isEnabled) return;
         this.canvasImg.style.display = "block"; // Show the image (needed only for guessers)
+        this.toolBar.style.display = "none"; // Hide the toolbar
         this.isEnabled = false;
         console.log('[Canvas] Drawing disabled');
 
@@ -129,8 +176,7 @@ export class Canvas {
 
     handleUpdate(canvasUpdate) {
         // Display the new update
-        let canvasImg = document.getElementById("canvas-img");
-        canvasImg.src = canvasUpdate;
+       this.canvasImg.src = canvasUpdate;
     }
 }
 

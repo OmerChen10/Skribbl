@@ -15,5 +15,6 @@ export const NetworkConfig = {
 }
 
 export const CanvasConfig = {
-    "SENDING_INTERVAL": 100 // ms
+    "SENDING_INTERVAL": 100, // ms
+    "UPDATE_BUFFER_SIZE": 10
 }
