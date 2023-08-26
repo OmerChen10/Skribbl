@@ -13,6 +13,7 @@ class WebsiteServer(threading.Thread):
 
     def __init__(self) -> None:
         threading.Thread.__init__(self)
+        self.daemon = True
 
         if (WebsiteServer.__instance is not None):
             raise Exception("Only one instance of WebsiteServer is allowed")

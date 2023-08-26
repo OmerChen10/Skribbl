@@ -27,6 +27,7 @@ class ClientHandler():
         self.score = 0
 
         self.thread = threading.Thread(target=self.initialize_client)
+        self.thread.daemon = True
         self.thread.start()
 
     async def start_update_loop(self):
@@ -37,14 +38,18 @@ class ClientHandler():
 
     async def start_sending_loop(self):
 
-        while True:
-            for pending_message in self.pending_messages:  # Send all pending messages.
-                await self.socket.send(pending_message)
-                # Remove the message from the list of pending messages.
-                self.pending_messages.remove(pending_message)
-                self.message_sent.set()  # Set the message sent event.
+        try:
+            while True:
+                for pending_message in self.pending_messages:  # Send all pending messages.
+                    await self.socket.send(pending_message)
+                    # Remove the message from the list of pending messages.
+                    self.pending_messages.remove(pending_message)
+                    self.message_sent.set()  # Set the message sent event.
 
-            await asyncio.sleep(0.1)
+                await asyncio.sleep(0.1)
+
+        except Exception:
+            print(f"[Client Handler] Client {self.id} disconnected.")
 
     async def start_receiving_loop(self) -> dict:
 
@@ -141,8 +146,9 @@ class ClientHandler():
 
         return self.canvas_image
 
-    async def close(self) -> None:
-        """ Closes the client. """
+    async def stop(self) -> None:
+        """ Stops the client. """
 
         await self.socket.close()
         asyncio.get_event_loop().stop()
+        self.thread.join()

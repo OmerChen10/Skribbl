@@ -39,3 +39,5 @@ class Skribbl():
               "[Skribbl] Game ended." +
               Style.RESET_ALL)
         
+        exit(0)
+        

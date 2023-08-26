@@ -18,6 +18,7 @@ class Timer():
 
         self.done.clear()
         self.timer_thread = threading.Timer(duration, self.done.set) # Create a new timer thread.
+        self.timer_thread.daemon = True
         self.start_time = time.time()
         self.timer_thread.start()
 

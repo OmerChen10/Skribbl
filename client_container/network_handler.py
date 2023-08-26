@@ -10,6 +10,7 @@ from Constants import *
 class NetworkHandler(threading.Thread):
     def __init__(self, game_code: str):
         threading.Thread.__init__(self)
+        self.daemon = True
 
         self.game_code: str = game_code
         self.clients: list[ClientHandler] = []
@@ -21,7 +22,7 @@ class NetworkHandler(threading.Thread):
     def run(self):
         """ Starts listening for new connections. """
 
-        print("[Client Handler] Starting network handler")
+        print("[Network Handler] Starting network handler")
 
         # Create a new event loop
         asyncio.set_event_loop(asyncio.new_event_loop())
@@ -87,4 +88,5 @@ class NetworkHandler(threading.Thread):
               "[Network Handler] Network handler stopped." +
               Style.RESET_ALL)
 
-        super().join()
+        for client in self.clients:
+            client.stop()

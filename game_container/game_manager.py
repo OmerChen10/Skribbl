@@ -11,6 +11,7 @@ from colorama import Fore, Style
 class GameManger(threading.Thread):
     def __init__(self, network_handler: NetworkHandler) -> None:
         threading.Thread.__init__(self)
+        self.daemon = True
 
         self.network_handler: NetworkHandler = network_handler
         self.num_of_players = 0
@@ -170,7 +171,7 @@ class GameManger(threading.Thread):
             if (player is not self.drawer):
                 # If the player guessed the word, check if it's correct.
                 if (player.new_guess.is_set()):
-                    if (player.get_new_guess() == self.word_selector.current_word):
+                    if (player.get_new_guess().lower() == self.word_selector.current_word.lower()):
                         player.send(Headers.GUESS_CORRECT,
                                     self.word_selector.current_word)
                         self.correct_guesses += 1
